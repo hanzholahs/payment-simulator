@@ -14,7 +14,8 @@ class AbstractRTGSSimulator(ABC):
         self.payments: pd.DataFrame = None
 
     def get_payments_df(self) -> pd.DataFrame:
-        return self.payments
+        col_names = ["Period", "Sender", "Receiver", "Count", "Value"]
+        return pd.DataFrame(self.payments, columns=col_names)
 
     def simulate_day(self, init_banks: int = None):
         self.network.simulate_payments(init_banks)
@@ -23,16 +24,15 @@ class AbstractRTGSSimulator(ABC):
 class RTGSSimulator(AbstractRTGSSimulator):
     def __init__(self,
                  network,
-                 open_time: str,
-                 close_time: str) -> None:
+                 open_time: str = "08:00:00",
+                 close_time: str = "17:00:00") -> None:
         super().__init__()
         self.network = network
         self.open_time = datetime.datetime.strptime(open_time, '%H:%M:%S').time()
-        self.close_time = datetime.datetime.strptime(close_time, '%H:%M:%S').time()    
+        self.close_time = datetime.datetime.strptime(close_time, '%H:%M:%S').time() 
 
 
     def run(self, sim_dates: list[datetime.datetime]) -> None:
-        col_names = ["Period", "Sender", "Receiver", "Count", "Value"]
         all_payments = []
         for date in sim_dates:
             self.simulate_day()
