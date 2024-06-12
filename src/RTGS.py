@@ -14,7 +14,7 @@ class AbstractRTGSSimulator(ABC):
         self.payments: pd.DataFrame = None
 
     def get_payments_df(self) -> pd.DataFrame:
-        col_names = ["Period", "Sender", "Receiver", "Count", "Value"]
+        col_names = ["Period", "Time", "Sender", "Receiver", "Count", "Value"]
         return pd.DataFrame(self.payments, columns=col_names)
 
     def simulate_day(self, init_banks: int = None):
@@ -32,28 +32,22 @@ class RTGSSimulator(AbstractRTGSSimulator):
         self.close_time = datetime.datetime.strptime(close_time, '%H:%M:%S').time() 
 
 
-    def run(self, sim_dates: list[datetime.datetime]) -> None:
+    def run(self, sim_periods: list[datetime.datetime]) -> None:
         all_payments = []
-        for date in sim_dates:
+        for period in sim_periods:
             self.simulate_day()
-            day_start_time = datetime.datetime.combine(date, self.open_time)
-            day_close_time = datetime.datetime.combine(date, self.close_time)
             for (i, j), data in self.network.G.edges.items():
                 for _ in range(data['s']):
-                    period = random_payment_period(day_start_time, day_close_time)
+                    timing = random_payment_period(self.open_time, self.close_time)
                     value = random_payment_value()
-                    all_payments.append((period, i, j, 1, value))
+                    all_payments.append((period, timing, i, j, 1, value))
         self.payments = all_payments
 
 
 
 if __name__ == "__main__":
-    sim_dates = [
-        datetime.datetime(2012, 10, 12),
-        datetime.datetime(2012, 10, 13),
-        datetime.datetime(2012, 10, 14),
-    ]
-
+    sim_periods = list(range(10))
+    
     sim_params = {
         "open_time": "06:30:00",
         "close_time": "18:30:00"
