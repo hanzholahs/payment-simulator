@@ -20,10 +20,10 @@ def random_payment_value() -> float:
     :param args: Parameters for the lognormal distribution, typically mean and standard deviation.
     :return: A random value sampled from a log-normal distribution.
     """
-    return np.exp(np.random.lognormal())
+    return np.random.lognormal()
 
 
-def random_payment_period(open_time: datetime.datetime, close_time: datetime.datetime) -> datetime.datetime:
+def random_payment_period(open_time: datetime.time, close_time: datetime.time) -> datetime.time:
     """
     Generates a random datetime within the operation period defined by the open and close times.
 
@@ -32,10 +32,12 @@ def random_payment_period(open_time: datetime.datetime, close_time: datetime.dat
     :param args: Additional arguments to be passed to the uniform distribution, typically the bounds for the random period.
     :return: A random datetime within the specified operation period.
     """
+    open_time = datetime.datetime.combine(datetime.date.today(), open_time)
+    close_time = datetime.datetime.combine(datetime.date.today(), close_time)
     operation_duration = (close_time - open_time).seconds
     random_period = int(np.random.uniform() * operation_duration)
     random_period = datetime.timedelta(seconds = random_period)
-    return open_time + random_period
+    return (open_time + random_period).time()
 
 
 def calc_num_payments(G: nx.DiGraph) -> int:
