@@ -1,6 +1,39 @@
 import datetime
 import numpy as np
 import networkx as nx
+
+
+def random_payment_value(**args) -> float:
+    """
+    Computes a random value based on a log-normal distribution.
+
+    :param args: Parameters for the lognormal distribution, typically mean and standard deviation.
+    :return: A random value sampled from a log-normal distribution.
+    """
+    return np.exp(np.random.lognormal(**args))
+
+
+def random_payment_period(open_time: datetime.datetime,
+                          close_time: datetime.datetime,
+                          **args) -> datetime.datetime:
+    """
+    Generates a random datetime within the operation period defined by the open and close times.
+
+    :param open_time: Opening time of the operation period.
+    :param close_time: Closing time of the operation, must be after the open time.
+    :param args: Additional arguments to be passed to the uniform distribution, typically the bounds for the random period.
+    :return: A random datetime within the specified operation period.
+    """
+    operation_duration = (close_time - open_time).seconds
+    random_period = int(np.random.uniform(**args) * operation_duration)
+    random_period = datetime.timedelta(seconds = random_period)
+    return open_time + random_period
+
+
+def calc_num_payments(G: nx.DiGraph) -> int:
+    return np.sum([data['s'] for _, data in G.edges.items()])
+
+
 def calculate_network_params(G: nx.DiGraph) -> dict:
     """
     Calculates and returns various parameters of the simulation such as connectivity, reciprocity, and degrees.
