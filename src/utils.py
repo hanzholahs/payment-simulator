@@ -3,19 +3,17 @@ import numpy as np
 import networkx as nx
 
 
-def random_payment_value(**args) -> float:
+def random_payment_value() -> float:
     """
     Computes a random value based on a log-normal distribution.
 
     :param args: Parameters for the lognormal distribution, typically mean and standard deviation.
     :return: A random value sampled from a log-normal distribution.
     """
-    return np.exp(np.random.lognormal(**args))
+    return np.exp(np.random.lognormal())
 
 
-def random_payment_period(open_time: datetime.datetime,
-                          close_time: datetime.datetime,
-                          **args) -> datetime.datetime:
+def random_payment_period(open_time: datetime.datetime, close_time: datetime.datetime) -> datetime.datetime:
     """
     Generates a random datetime within the operation period defined by the open and close times.
 
@@ -25,7 +23,7 @@ def random_payment_period(open_time: datetime.datetime,
     :return: A random datetime within the specified operation period.
     """
     operation_duration = (close_time - open_time).seconds
-    random_period = int(np.random.uniform(**args) * operation_duration)
+    random_period = int(np.random.uniform() * operation_duration)
     random_period = datetime.timedelta(seconds = random_period)
     return open_time + random_period
 
