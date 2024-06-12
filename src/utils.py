@@ -2,6 +2,16 @@ import datetime
 import numpy as np
 import networkx as nx
 
+def anomaly_parameter(x_start: float,
+                      x_end: float,
+                      rate: float,
+                      current: int | datetime.datetime,
+                      anomaly_start: int | datetime.datetime,
+                      anomaly_end: int | datetime.datetime) -> float:
+    if current < anomaly_start or anomaly_end < current:
+        return 0
+    return x_start + (x_end - x_start) * ((current-anomaly_start) / (anomaly_end-anomaly_start)) ** rate
+
 
 def random_payment_value() -> float:
     """
