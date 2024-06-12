@@ -3,7 +3,10 @@ from utils import anomaly_parameter
 import datetime
 import numpy as np
 
-class AnomalyGenerator:
+class AbstractAnomalyGenerator:
+    pass
+
+class AnomalyGenerator(AbstractAnomalyGenerator):
     def __init__(self,
                  anomaly_start: int | datetime.datetime,
                  anomaly_end: int | datetime.datetime,
@@ -38,7 +41,7 @@ class AnomalyGenerator:
         anomaly_prob = np.random.binomial(1, prob_val)
         anomaly_val = np.random.exponential(lambda_val)
 
-        return anomaly_prob, anomaly_val, anomaly_prob * anomaly_val
+        return anomaly_prob * anomaly_val
     
 
 if __name__ == "__main__":
