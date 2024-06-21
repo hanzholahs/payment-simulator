@@ -107,22 +107,30 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
 
         # Initialize preference vector
         self.h = np.ones(init_banks, dtype=float)
+
+        # Set number of payments for the iteration
+        n_payments = self.avg_payments * init_banks
         
         # Simulate payment network
-        while len(self.G.nodes) < self.total_banks:
+        while len(self.G.nodes) <= self.total_banks:
             # Simulate transactions
-            for _ in range(self.avg_payments):
+            for _ in range(n_payments):
                 self._create_transaction()
 
-            # Initialize the next bank/node, don't add if the first iteration
-            if first:
-                first = False
-                continue
+            # Determine the number of new banks to add in the next iteration
+            n_addition = np.minimum(np.random.randint(1, increment), self.total_banks - len(self.G.nodes))
+            if n_addition <= 0:
+                break
 
-            add = np.minimum(np.random.randint(1, increment), self.total_banks - len(self.G.nodes))
-            self.G.add_nodes_from(list(range(len(self.G.nodes), len(self.G.nodes) + add)))
-            self.h = np.append(self.h, np.ones(add))
+            # Initialize the next bank/node
+            new_nodes = list(range(len(self.G.nodes), len(self.G.nodes) + n_addition))
+            self.G.add_nodes_from(new_nodes)
 
+            # Update the preference vector
+            self.h = np.append(self.h, np.ones(n_addition))
+
+            # Update the number of payments for the next iteration
+            n_payments = self.avg_payments * n_addition
 
 
 if __name__ == "__main__":
