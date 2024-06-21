@@ -3,13 +3,17 @@ from utils import calculate_network_params
 import numpy as np
 import pandas as pd
 import networkx as nx
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 
 class AbstractPaymentNetwork(ABC):
     def __init__(self) -> None:
         self.G = None
+
+    @abstractmethod
+    def simulate_payments(self):
+        pass
 
 
     def extract_link_matrix(self) -> np.ndarray:
