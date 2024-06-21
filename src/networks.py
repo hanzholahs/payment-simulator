@@ -18,7 +18,25 @@ class AbstractPaymentNetwork(ABC):
 
         :return: A numpy ndarray representing the adjacency matrix of the network graph.
         """
-        return nx.to_numpy_array(self.G, weight='s')
+        matrix = nx.to_numpy_array(self.G, weight='weight')
+        return matrix / matrix.sum()
+    
+    def _create_transaction(self):
+        # select sender and receiver
+        prob = self.h / self.h.sum()
+        sender = self._random_bank(prob)
+        receiver = self._random_bank(prob)
+
+        # prevent self-loop transactions unless explicitly allowed
+        while sender == receiver and not self.allow_self_loop:
+            receiver = self._random_bank(prob)
+
+        # update payment link between banks
+        self._payment_link(sender, receiver)
+
+        # update preferential attachment strength
+        self.h[sender] += self.alpha
+        self.h[receiver] += self.alpha
 
 
     def _random_bank(self, prob) -> int:
@@ -38,9 +56,9 @@ class AbstractPaymentNetwork(ABC):
         :param receiver: The identifier of the bank receiving the payment.
         """
         if self.G.has_edge(sender, receiver):
-            self.G[sender][receiver]['s'] += 1
+            self.G[sender][receiver]['weight'] += 1
         else:
-            self.G.add_edge(sender, receiver, s=1)
+            self.G.add_edge(sender, receiver, weight=1)
 
 
 
@@ -74,6 +92,8 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
         :param date: The date on which the payments are to be simulated.
         :param init_banks: Initial number of banks to start the simulation with.
         """
+        first = True
+
         if init_banks is None:
             init_banks = int(1 + np.ceil(self.total_banks / 2))
         
@@ -83,27 +103,19 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
 
         # Initialize preference vector
         self.h = np.ones(init_banks, dtype=float)
+
         
         # Simulate payment network
-        for k in range(init_banks, self.total_banks):
+        for k in range(init_banks - 1, self.total_banks):
+            # Simulate transactions
             for l in range(self.avg_payments):
-                # select sender and receiver
-                prob = self.h / self.h.sum()
-                sender = self._random_bank(prob)
-                receiver = self._random_bank(prob)
-
-                # prevent self-loop transactions unless explicitly allowed
-                while sender == receiver and not self.allow_self_loop:
-                    receiver = self._random_bank(prob)
-
-                # update payment link between banks
-                self._payment_link(sender, receiver)
-
-                # update preferential attachment strength
-                self.h[sender] += self.alpha
-                self.h[receiver] += self.alpha
+                self._create_transaction()
 
             # Initialize the next bank/node
+            if first:
+                first = False
+                continue
+
             self.G.add_node(k) 
             self.h = np.append(self.h, 1.)
 
