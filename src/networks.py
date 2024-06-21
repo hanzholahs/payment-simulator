@@ -89,66 +89,7 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
         self.allow_self_loop = allow_self_loop
 
 
-    def simulate_payments(self, init_banks: int = None) -> None:
-        """
-        Simulate the payment processing between banks for a given date, starting with an initial set of banks.
-
-        :param date: The date on which the payments are to be simulated.
-        :param init_banks: Initial number of banks to start the simulation with.
-        """
-        first = True
-
-        if init_banks is None:
-            init_banks = int(1 + np.ceil(self.total_banks / 2))
-        
-        # Initialize the graph with some nodes
-        self.G = nx.DiGraph() # graph network
-        self.G.add_nodes_from(list(range(init_banks)))
-
-        # Initialize preference vector
-        self.h = np.ones(init_banks, dtype=float)
-
-        
-        # Simulate payment network
-        for k in range(init_banks - 1, self.total_banks):
-            # Simulate transactions
-            for l in range(self.avg_payments):
-                self._create_transaction()
-
-            # Initialize the next bank/node
-            if first:
-                first = False
-                continue
-
-            self.G.add_node(k) 
-            self.h = np.append(self.h, 1.)
-
-
-
-class ProgressivePaymentNetwork(AbstractPaymentNetwork):
-    def __init__(self,
-                 total_banks: int,
-                 avg_payments: int,
-                 alpha: float = 1.0,
-                 allow_self_loop: bool = False) -> None:
-        """
-        Initializes the RTGS Simulator with specified parameters.
-
-        :param total_banks: Total number of banks participating in the RTGS simulation.
-        :param avg_payments: Average number of payments each bank is expected to process during the simulation.
-        :param alpha: A learning rate parameter that influences the strength of preferential attachment in the simulation.
-        :param allow_self_loop: Boolean indicating whether transactions within the same bank (self-loops) are allowed.
-        """
-        super().__init__()
-
-        # set simulation parameters
-        self.alpha = alpha
-        self.total_banks = total_banks
-        self.avg_payments = avg_payments
-        self.allow_self_loop = allow_self_loop
-
-
-    def simulate_payments(self, increment: int = 5, init_banks: int = None) -> None:
+    def simulate_payments(self, init_banks: int = None, increment: int = 1) -> None:
         """
         Simulate the payment processing between banks for a given date, starting with an initial set of banks.
 
@@ -173,12 +114,11 @@ class ProgressivePaymentNetwork(AbstractPaymentNetwork):
             for _ in range(self.avg_payments):
                 self._create_transaction()
 
-            # Initialize the next bank/node
+            # Initialize the next bank/node, don't add if the first iteration
             if first:
                 first = False
                 continue
 
-            add = np.random.randint(1, increment)
             add = np.minimum(np.random.randint(1, increment), self.total_banks - len(self.G.nodes))
             self.G.add_nodes_from(list(range(len(self.G.nodes), len(self.G.nodes) + add)))
             self.h = np.append(self.h, np.ones(add))
