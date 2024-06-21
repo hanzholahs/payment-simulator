@@ -9,23 +9,42 @@ from abc import ABC, abstractmethod
 
 class AbstractPaymentNetwork(ABC):
     def __init__(self) -> None:
+        """
+        Initializes the abstract payment network with a graph attribute.
+        """
         self.G = None
 
     @abstractmethod
     def simulate_payments(self):
+        """
+        Abstract method to simulate payments.
+        This method should be implemented by subclasses.
+        """
         pass
 
 
-    def extract_link_matrix(self) -> np.ndarray:
+    def extract_link_matrix(self, prop: bool = True) -> np.ndarray:
         """
-        Extracts and returns the adjacency matrix of the network graph where each element (i, j) in the matrix represents the number of transactions from bank i to bank j.
+        Extracts and returns the adjacency matrix of the network graph.
 
-        :return: A numpy ndarray representing the adjacency matrix of the network graph.
+        Parameters
+        ----------
+        prop : bool, optional
+            If True, returns the matrix as proportions of the total transactions. If False, returns raw transaction counts.
+
+        Returns
+        -------
+        np.ndarray
+            A numpy ndarray representing the adjacency matrix of the network graph.
         """
         matrix = nx.to_numpy_array(self.G, weight='weight')
+        if not prop: return matrix
         return matrix / matrix.sum()
     
     def _create_transaction(self):
+        """
+        Creates a transaction between randomly selected banks in the network.
+        """
         # select sender and receiver
         prob = self.h / self.h.sum()
         sender = self._random_bank(prob)
@@ -47,7 +66,15 @@ class AbstractPaymentNetwork(ABC):
         """
         Selects a bank for initiating a transaction based on a weighted probability distribution.
 
-        :return: The selected bank's identifier.
+        Parameters
+        ----------
+        prob : np.ndarray
+            Array of probabilities for each bank.
+
+        Returns
+        -------
+        int
+            The selected bank's identifier.
         """
         return np.random.choice(self.G.nodes(), p=prob)
     
@@ -56,8 +83,12 @@ class AbstractPaymentNetwork(ABC):
         """
         Creates or updates a payment link between two banks in the simulation graph.
 
-        :param sender: The identifier of the bank initiating the payment.
-        :param receiver: The identifier of the bank receiving the payment.
+        Parameters
+        ----------
+        sender : int
+            The identifier of the bank initiating the payment.
+        receiver : int
+            The identifier of the bank receiving the payment.
         """
         if self.G.has_edge(sender, receiver):
             self.G[sender][receiver]['weight'] += 1
@@ -75,10 +106,16 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
         """
         Initializes the RTGS Simulator with specified parameters.
 
-        :param total_banks: Total number of banks participating in the RTGS simulation.
-        :param avg_payments: Average number of payments each bank is expected to process during the simulation.
-        :param alpha: A learning rate parameter that influences the strength of preferential attachment in the simulation.
-        :param allow_self_loop: Boolean indicating whether transactions within the same bank (self-loops) are allowed.
+        Parameters
+        ----------
+        total_banks : int
+            Total number of banks participating in the RTGS simulation.
+        avg_payments : int
+            Average number of payments each bank is expected to process during the simulation.
+        alpha : float, optional
+            A learning rate parameter that influences the strength of preferential attachment in the simulation.
+        allow_self_loop : bool, optional
+            Boolean indicating whether transactions within the same bank (self-loops) are allowed.
         """
         super().__init__()
 
@@ -89,15 +126,18 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
         self.allow_self_loop = allow_self_loop
 
 
-    def simulate_payments(self, init_banks: int = None, increment: int = 1) -> None:
+    def simulate_payments(self, init_banks: int = None, increment: int = 2) -> None:
         """
-        Simulate the payment processing between banks for a given date, starting with an initial set of banks.
+        Simulates the payment processing between banks for a given period, starting with an initial set of banks.
 
-        :param date: The date on which the payments are to be simulated.
-        :param init_banks: Initial number of banks to start the simulation with.
+        Parameters
+        ----------
+        init_banks : int, optional
+            Initial number of banks to start the simulation with. If None, it defaults to half of the total banks rounded up.
+        increment : int, optional
+            The number of banks to add in each iteration.
+
         """
-        first = True
-
         if init_banks is None:
             init_banks = int(1 + np.ceil(self.total_banks / 2))
         
@@ -134,11 +174,9 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-
     init_banks = 3
-    increment = 3
-    total_banks = 10
+    increment = 4
+    total_banks = 9
     alpha = 0.00001
     avg_payments = 1000
     allow_self_loop = False
@@ -147,18 +185,6 @@ if __name__ == "__main__":
                                    avg_payments=avg_payments,
                                    alpha=alpha,
                                    allow_self_loop=allow_self_loop)
-    network.simulate_payments(init_banks=init_banks)
-
-    print("Bank strengths:")
-    print(network.h)
-
-    print("Network links:")
-    print(np.round(network.extract_link_matrix(), 4))
-    
-    network = ProgressivePaymentNetwork(total_banks=total_banks,
-                                        avg_payments=avg_payments,
-                                        alpha=alpha,
-                                        allow_self_loop=allow_self_loop)
     network.simulate_payments(increment=increment, init_banks=init_banks)
 
     print("Bank strengths:")
@@ -166,3 +192,4 @@ if __name__ == "__main__":
 
     print("Network links:")
     print(np.round(network.extract_link_matrix(), 4))
+    print(network.extract_link_matrix(False).sum() == total_banks * avg_payments)
