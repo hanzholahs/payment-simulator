@@ -11,5 +11,6 @@ This repository contains the essential code and analysis for anomaly detection f
 ## Contact
 
 For any queries regarding the use or development of these analysis, please raise an issue in the repository or contact the authors directly:
+
 * Hanzholah Shobri (hanzholahs@gmail.com)
 * Farhan M Sumadiredja (farhansumadiredja@gmail.com)
