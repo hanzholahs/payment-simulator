@@ -1,6 +1,7 @@
-import numpy as np
-import networkx as nx
 from abc import ABC, abstractmethod
+
+import networkx as nx
+import numpy as np
 
 
 class AbstractPaymentNetwork(ABC):
@@ -11,7 +12,7 @@ class AbstractPaymentNetwork(ABC):
         self.G: nx.DiGraph = None
 
     @abstractmethod
-    def simulate_payments(self):
+    def simulate_payments(self, init_banks: int | None):
         """
         Abstract method to simulate payments.
         This method should be implemented by subclasses.

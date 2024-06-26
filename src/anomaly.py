@@ -1,15 +1,20 @@
 from utils import anomaly_parameter
+from abc import ABC, abstractmethod
 
-import datetime
 import numpy as np
 
-class AbstractAnomalyGenerator:
-    pass
+class AbstractAnomalyGenerator(ABC):
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def anomaly_value(self, current_period: int) -> float:
+        pass
 
 class AnomalyGenerator(AbstractAnomalyGenerator):
     def __init__(self,
-                 anomaly_start: int | datetime.datetime,
-                 anomaly_end: int | datetime.datetime,
+                 anomaly_start: int,
+                 anomaly_end: int,
                  prob_start: float,
                  prob_end: float,
                  lambda_start: float,
@@ -23,7 +28,7 @@ class AnomalyGenerator(AbstractAnomalyGenerator):
         self.lambda_end = lambda_end
         self.rate = rate
 
-    def anomaly_value(self, current_period: int | datetime.datetime) -> float:
+    def anomaly_value(self, current_period: int) -> float:
         prob_val = anomaly_parameter(self.prob_start,
                                      self.prob_end,
                                      self.rate,

@@ -5,9 +5,9 @@ import networkx as nx
 def anomaly_parameter(x_start: float,
                       x_end: float,
                       rate: float,
-                      current: int | datetime.datetime,
-                      anomaly_start: int | datetime.datetime,
-                      anomaly_end: int | datetime.datetime) -> float:
+                      current: int,
+                      anomaly_start: int,
+                      anomaly_end: int) -> float:
     if current < anomaly_start or anomaly_end < current:
         return 0
     return x_start + (x_end - x_start) * ((current-anomaly_start) / (anomaly_end-anomaly_start)) ** rate
@@ -32,12 +32,11 @@ def random_payment_period(open_time: datetime.time, close_time: datetime.time) -
     :param args: Additional arguments to be passed to the uniform distribution, typically the bounds for the random period.
     :return: A random datetime within the specified operation period.
     """
-    open_time = datetime.datetime.combine(datetime.date.today(), open_time)
-    close_time = datetime.datetime.combine(datetime.date.today(), close_time)
-    operation_duration = (close_time - open_time).seconds
-    random_period = int(np.random.uniform() * operation_duration)
-    random_period = datetime.timedelta(seconds = random_period)
-    return (open_time + random_period).time()
+    open_datetime = datetime.datetime.combine(datetime.date.today(), open_time)
+    close_datetime = datetime.datetime.combine(datetime.date.today(), close_time)
+    operation_duration = (close_datetime - open_datetime).seconds
+    random_period = datetime.timedelta(seconds = int(np.random.uniform() * operation_duration))
+    return (open_datetime + random_period).time()
 
 
 def calc_num_payments(G: nx.DiGraph) -> int:
@@ -58,8 +57,6 @@ def calculate_network_params(G: nx.DiGraph) -> dict:
     avg_degree = np.mean([val for _, val in G.degree])
     max_k_in = np.max([val for _, val in G.in_degree])
     max_k_out = np.max([val for _, val in G.out_degree])
-
-    num_payments = np.sum([data['s'] for _, data in G.edges.items()])
     
     return {
         "Number of nodes": num_nodes,
@@ -69,5 +66,4 @@ def calculate_network_params(G: nx.DiGraph) -> dict:
         "Average Degree (k)": avg_degree,
         "Max (k-in)": max_k_in,
         "Max (k-out)": max_k_out,
-        "Number of payments": num_payments
     }

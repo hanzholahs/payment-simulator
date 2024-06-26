@@ -1,9 +1,8 @@
 from networks import AbstractPaymentNetwork, SimplePaymentNetwork
 from anomaly import AbstractAnomalyGenerator, AnomalyGenerator
-from utils import *
+from utils import random_payment_period, random_payment_value
 
 import datetime
-import numpy as np
 import pandas as pd
 from abc import ABC
 
@@ -11,11 +10,15 @@ from abc import ABC
 
 class AbstractRTGSSimulator(ABC):
     def __init__(self,
-                 network: AbstractPaymentNetwork = None,
+                 network: AbstractPaymentNetwork | None = None,
                  open_time: str = "08:00:00",
-                 close_time: str = "17:00:00") -> None:
-        self.payments = None
-        self.network = network
+                 close_time: str = "17:00:00",
+                 **kwargs) -> None:
+        if network is None:
+            network = SimplePaymentNetwork(**kwargs)
+
+        self.payments: list = []
+        self.network: AbstractPaymentNetwork = network
         self.open_time = datetime.datetime.strptime(open_time, '%H:%M:%S').time()
         self.close_time = datetime.datetime.strptime(close_time, '%H:%M:%S').time() 
 
@@ -23,7 +26,7 @@ class AbstractRTGSSimulator(ABC):
         col_names = ["Period", "Time", "Sender", "Receiver", "Count", "Value"]
         return pd.DataFrame(self.payments, columns=col_names)
 
-    def simulate_day(self, init_banks: int = None):
+    def simulate_day(self, init_banks: int | None = None):
         self.network.simulate_payments(init_banks)
 
 
@@ -32,11 +35,11 @@ class RTGSSimulator(AbstractRTGSSimulator):
                  sim_id,
                  open_time: str = "08:00:00",
                  close_time: str = "17:00:00",
-                 network: AbstractPaymentNetwork = None) -> None:
+                 network: AbstractPaymentNetwork | None = None) -> None:
         super().__init__(network, open_time, close_time)
         self.sim_id = sim_id
 
-    def run(self, sim_periods: list[datetime.datetime]) -> None:
+    def run(self, sim_periods: list[int]) -> None:
         all_payments = []
         for period in sim_periods:
             self.simulate_day()
@@ -51,15 +54,15 @@ class RTGSSimulator(AbstractRTGSSimulator):
 class AnomalyRTGSSimulator(AbstractRTGSSimulator):
     def __init__(self,
                  sim_id,
+                 anomaly: AbstractAnomalyGenerator,
                  open_time: str = "08:00:00",
                  close_time: str = "17:00:00",
-                 network: AbstractPaymentNetwork = None,
-                 anomaly: AbstractAnomalyGenerator = None) -> None:
+                 network: AbstractPaymentNetwork | None = None) -> None:
         super().__init__(network, open_time, close_time)
         self.sim_id = sim_id
         self.anomaly = anomaly
 
-    def run(self, sim_periods: list[datetime.datetime]) -> None:
+    def run(self, sim_periods: list[int]) -> None:
         all_payments = []
         for period in sim_periods:
             self.simulate_day()
