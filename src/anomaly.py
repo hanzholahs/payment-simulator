@@ -9,7 +9,7 @@ class AbstractAnomalyGenerator(ABC):
         pass
 
     @abstractmethod
-    def anomaly_value(self, current_period: int) -> float:
+    def __call__(self, current_period: int) -> float:
         pass
 
 
@@ -32,7 +32,7 @@ class AnomalyGenerator(AbstractAnomalyGenerator):
         self.lambda_end = lambda_end
         self.rate = rate
 
-    def anomaly_value(self, current_period: int) -> float:
+    def __call__(self, current_period: int) -> float:
         prob_val = anomaly_parameter(
             self.prob_start,
             self.prob_end,
@@ -69,4 +69,4 @@ if __name__ == "__main__":
     )
 
     for i in range(25):
-        print(f"{i:2d} : {gen.anomaly_value(i)}")
+        print(f"{i:2d} : {gen(i)}")

@@ -8,12 +8,15 @@ from abc import ABC
 from typing import Callable, Any
     def __init__(
         self,
+        network: AbstractPaymentNetwork,
         value_fn: Callable,
         timing_fn: Callable,
         open_time: str = "08:00:00",
         close_time: str = "17:00:00",
         **kwargs,
     ) -> None:
+        self.payments: list[tuple] = []
+        self.network = network
         self.value_fn = value_fn
         self.timing_fn = timing_fn
         self.open_time = datetime.datetime.strptime(open_time, "%H:%M:%S").time()
@@ -30,53 +33,69 @@ from typing import Callable, Any
 class RTGSSimulator(AbstractRTGSSimulator):
     def __init__(
         self,
-        sim_id,
-        open_time: str = "08:00:00",
-        close_time: str = "17:00:00",
-        network: AbstractPaymentNetwork | None = None,
+        sim_id: Any,
+        **kwargs
     ) -> None:
-        super().__init__(network, open_time, close_time)
+        super().__init__(**kwargs)
         self.sim_id = sim_id
 
     def run(self, sim_periods: list[int]) -> None:
-        all_payments = []
+        all_payments: list[tuple] = []
+
+        # Process transactions for each simulation period
         for period in sim_periods:
-            self.simulate_day()
+            self.simulate_day()  # Simulate network dynamics for the day
+
+            # Process each link in the simulated payment network
             for (i, j), data in self.network.G.edges.items():
+                # Simulate transactions based on the weight of each link
+                for _ in range(data["weight"]):
                     timing = self.timing_fn(self.open_time, self.close_time)  # Calculate transaction timing
                     value = self.value_fn()  # Calculate transaction value
                     all_payments.append((period, timing, i, j, 1, value))
+
         self.payments = all_payments
 
 
 class AnomalyRTGSSimulator(AbstractRTGSSimulator):
     def __init__(
         self,
-        sim_id,
+        sim_id: Any,
         anomaly: AbstractAnomalyGenerator,
-        open_time: str = "08:00:00",
-        close_time: str = "17:00:00",
-        network: AbstractPaymentNetwork | None = None,
+        **kwargs
     ) -> None:
-        super().__init__(network, open_time, close_time)
+        super().__init__(**kwargs)
         self.sim_id = sim_id
         self.anomaly = anomaly
 
     def run(self, sim_periods: list[int]) -> None:
-        all_payments = []
+        all_payments: list[tuple] = []
+
+        # Process transactions for each simulation period
         for period in sim_periods:
-            self.simulate_day()
+            self.simulate_day()  # Simulate network dynamics for the day
+
+            # Process each link in the simulated payment network
             for (i, j), data in self.network.G.edges.items():
+
+                # Simulate transactions based on the weight of each link
+                for _ in range(data["weight"]):
                     timing = self.timing_fn(self.open_time, self.close_time)  # Calculate transaction timing
                     value = self.value_fn() + self.anomaly(period)  # Calculate transaction value with anomaly
+                    all_payments.append((period, timing, i, j, 1, value))  # Store transaction details
+        
         self.payments = all_payments
 
 
 if __name__ == "__main__":
     sim_periods = list(range(15))
 
+    sim_params = {
+        "open_time": "06:30:00",
+        "close_time": "18:30:00",
         "value_fn": random_payment_value,
         "timing_fn": random_payment_timing
+    }
 
     payment_network = SimplePaymentNetwork(
         total_banks=10, avg_payments=15, alpha=0.01, allow_self_loop=False
@@ -92,19 +111,21 @@ if __name__ == "__main__":
         rate=0.5,
     )
 
-    nrml_simulator = RTGSSimulator(sim_id=1, network=payment_network, **sim_params)
-    nrml_simulator.run(sim_periods)
+    normal_transactions = TransactionSim(sim_id=1, network=payment_network, **sim_params)
+    normal_transactions.run(sim_periods)
 
-    payments1 = nrml_simulator.get_payments_df()
+    payments1 = normal_transactions.get_payments_df()
     print(payments1.head(3))
     print(payments1.tail(3))
 
-    anml_simulator = AnomalyRTGSSimulator(
-        sim_id=2, network=payment_network, anomaly=anomaly_generator, **sim_params
+    anomaly_transactions = AnomalyTransactionSim(
+        sim_id=2, network=payment_network,
+        anomaly = anomaly_generator,
+        **sim_params
     )
-    anml_simulator.run(sim_periods)
+    anomaly_transactions.run(sim_periods)
 
-    payments2 = anml_simulator.get_payments_df()
+    payments2 = anomaly_transactions.get_payments_df()
     print(payments2.head(3))
     print(payments2.tail(3))
 
@@ -115,10 +136,10 @@ if __name__ == "__main__":
     test_len = 50
 
     for _ in range(test_len):
-        nrml_simulator.run(sim_periods)
-        anml_simulator.run(sim_periods)
-        x1 = nrml_simulator.get_payments_df()["Value"].sum()
-        x2 = anml_simulator.get_payments_df()["Value"].sum()
+        normal_transactions.run(sim_periods)
+        anomaly_transactions.run(sim_periods)
+        x1 = normal_transactions.get_payments_df()["Value"].sum()
+        x2 = anomaly_transactions.get_payments_df()["Value"].sum()
         if x2 > x1:
             correct += 1
 
