@@ -1,25 +1,21 @@
 from networks import AbstractPaymentNetwork, SimplePaymentNetwork
 from anomaly import AbstractAnomalyGenerator, AnomalyGenerator
-from utils import random_payment_period, random_payment_value
+from utils import random_payment_timing, random_payment_value
 
 import datetime
 import pandas as pd
 from abc import ABC
-
-
-class AbstractRTGSSimulator(ABC):
+from typing import Callable, Any
     def __init__(
         self,
-        network: AbstractPaymentNetwork | None = None,
+        value_fn: Callable,
+        timing_fn: Callable,
         open_time: str = "08:00:00",
         close_time: str = "17:00:00",
         **kwargs,
     ) -> None:
-        if network is None:
-            network = SimplePaymentNetwork(**kwargs)
-
-        self.payments: list = []
-        self.network: AbstractPaymentNetwork = network
+        self.value_fn = value_fn
+        self.timing_fn = timing_fn
         self.open_time = datetime.datetime.strptime(open_time, "%H:%M:%S").time()
         self.close_time = datetime.datetime.strptime(close_time, "%H:%M:%S").time()
 
@@ -47,9 +43,8 @@ class RTGSSimulator(AbstractRTGSSimulator):
         for period in sim_periods:
             self.simulate_day()
             for (i, j), data in self.network.G.edges.items():
-                for _ in range(data["s"]):
-                    timing = random_payment_period(self.open_time, self.close_time)
-                    value = random_payment_value()
+                    timing = self.timing_fn(self.open_time, self.close_time)  # Calculate transaction timing
+                    value = self.value_fn()  # Calculate transaction value
                     all_payments.append((period, timing, i, j, 1, value))
         self.payments = all_payments
 
@@ -72,17 +67,16 @@ class AnomalyRTGSSimulator(AbstractRTGSSimulator):
         for period in sim_periods:
             self.simulate_day()
             for (i, j), data in self.network.G.edges.items():
-                for _ in range(data["s"]):
-                    timing = random_payment_period(self.open_time, self.close_time)
-                    value = random_payment_value() + self.anomaly.anomaly_value(period)
-                    all_payments.append((period, timing, i, j, 1, value))
+                    timing = self.timing_fn(self.open_time, self.close_time)  # Calculate transaction timing
+                    value = self.value_fn() + self.anomaly(period)  # Calculate transaction value with anomaly
         self.payments = all_payments
 
 
 if __name__ == "__main__":
     sim_periods = list(range(15))
 
-    sim_params = {"open_time": "06:30:00", "close_time": "18:30:00"}
+        "value_fn": random_payment_value,
+        "timing_fn": random_payment_timing
 
     payment_network = SimplePaymentNetwork(
         total_banks=10, avg_payments=15, alpha=0.01, allow_self_loop=False
