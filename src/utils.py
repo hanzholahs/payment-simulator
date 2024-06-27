@@ -23,7 +23,7 @@ def random_payment_value() -> float:
     return np.random.lognormal()
 
 
-def random_payment_period(open_time: datetime.time, close_time: datetime.time) -> datetime.time:
+def random_payment_timing(open_time: datetime.time, close_time: datetime.time) -> datetime.time:
     """
     Generates a random datetime within the operation period defined by the open and close times.
 
