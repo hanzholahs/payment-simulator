@@ -1,6 +1,8 @@
 import datetime
-import numpy as np
+
 import networkx as nx
+import numpy as np
+
 
 def anomaly_parameter(x_start: float,
                       x_end: float,

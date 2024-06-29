@@ -96,7 +96,7 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
         self,
         total_banks: int,
         avg_payments: int,
-        alpha: float = 1.0,
+        alpha: float = 0,
         allow_self_loop: bool = False,
     ) -> None:
         """
@@ -177,7 +177,7 @@ class GroupedPaymentNetwork(AbstractPaymentNetwork):
         total_banks: int,
         bank_groups: list[int | float],
         avg_payments: int,
-        alpha: float = 1.0,
+        alpha: float = 0,
         allow_self_loop: bool = False,
     ) -> None:
         """

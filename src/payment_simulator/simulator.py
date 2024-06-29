@@ -1,11 +1,12 @@
-from networks import AbstractPaymentNetwork, SimplePaymentNetwork
-from anomaly import AbstractAnomalyGenerator, AnomalyGenerator
-from utils import random_payment_timing, random_payment_value
-
 import datetime
-import pandas as pd
 from abc import ABC
-from typing import Callable, Any
+from typing import Any, Callable
+
+import pandas as pd
+
+from .anomaly import AbstractAnomalyGenerator, AnomalyGenerator
+from .networks import AbstractPaymentNetwork, SimplePaymentNetwork
+from .utils import random_payment_timing, random_payment_value
 
 
 class AbstractTransactionSim(ABC):
@@ -96,6 +97,7 @@ class AbstractTransactionSim(ABC):
         """
         self.network.simulate_payments(init_banks)
 
+
 class TransactionSim(AbstractTransactionSim):
     """
     Simulation class for generating transaction patterns in a financial network.
@@ -123,11 +125,7 @@ class TransactionSim(AbstractTransactionSim):
         Executes the simulation over specified time periods, generating standard payments.
     """
 
-    def __init__(
-        self,
-        sim_id: Any,
-        **kwargs
-    ) -> None:
+    def __init__(self, sim_id: Any, **kwargs) -> None:
         """
         Initializes the TransactionSim with a simulation identifier and other parameters.
         """
@@ -162,7 +160,9 @@ class TransactionSim(AbstractTransactionSim):
             for (i, j), data in self.network.G.edges.items():
                 # Simulate transactions based on the weight of each link
                 for _ in range(data["weight"]):
-                    timing = self.timing_fn(self.open_time, self.close_time)  # Calculate transaction timing
+                    timing = self.timing_fn(
+                        self.open_time, self.close_time
+                    )  # Calculate transaction timing
                     value = self.value_fn()  # Calculate transaction value
                     all_payments.append((period, timing, i, j, 1, value))
 
@@ -198,10 +198,7 @@ class AnomalyTransactionSim(AbstractTransactionSim):
     """
 
     def __init__(
-        self,
-        sim_id: Any,
-        anomaly: AbstractAnomalyGenerator,
-        **kwargs
+        self, sim_id: Any, anomaly: AbstractAnomalyGenerator, **kwargs
     ) -> None:
         """
         Initializes the AnomalyTransactionSim with a simulation identifier, an anomaly generator, and other parameters.
@@ -236,13 +233,18 @@ class AnomalyTransactionSim(AbstractTransactionSim):
 
             # Process each link in the simulated payment network
             for (i, j), data in self.network.G.edges.items():
-
                 # Simulate transactions based on the weight of each link
                 for _ in range(data["weight"]):
-                    timing = self.timing_fn(self.open_time, self.close_time)  # Calculate transaction timing
-                    value = self.value_fn() + self.anomaly(period)  # Calculate transaction value with anomaly
-                    all_payments.append((period, timing, i, j, 1, value))  # Store transaction details
-        
+                    timing = self.timing_fn(
+                        self.open_time, self.close_time
+                    )  # Calculate transaction timing
+                    value = self.value_fn() + self.anomaly(
+                        period
+                    )  # Calculate transaction value with anomaly
+                    all_payments.append(
+                        (period, timing, i, j, 1, value)
+                    )  # Store transaction details
+
         self.payments = all_payments
 
 
@@ -253,7 +255,7 @@ if __name__ == "__main__":
         "open_time": "06:30:00",
         "close_time": "18:30:00",
         "value_fn": random_payment_value,
-        "timing_fn": random_payment_timing
+        "timing_fn": random_payment_timing,
     }
 
     payment_network = SimplePaymentNetwork(
@@ -270,7 +272,9 @@ if __name__ == "__main__":
         rate=0.5,
     )
 
-    normal_transactions = TransactionSim(sim_id=1, network=payment_network, **sim_params)
+    normal_transactions = TransactionSim(
+        sim_id=1, network=payment_network, **sim_params
+    )
     normal_transactions.run(sim_periods)
 
     payments1 = normal_transactions.get_payments_df()
@@ -278,9 +282,7 @@ if __name__ == "__main__":
     print(payments1.tail(3))
 
     anomaly_transactions = AnomalyTransactionSim(
-        sim_id=2, network=payment_network,
-        anomaly = anomaly_generator,
-        **sim_params
+        sim_id=2, network=payment_network, anomaly=anomaly_generator, **sim_params
     )
     anomaly_transactions.run(sim_periods)
 

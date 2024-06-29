@@ -1,7 +1,8 @@
-from utils import anomaly_parameter
 from abc import ABC, abstractmethod
 
 import numpy as np
+
+from .utils import anomaly_parameter
 
 
 class AbstractAnomalyGenerator(ABC):
