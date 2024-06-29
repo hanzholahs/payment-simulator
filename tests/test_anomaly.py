@@ -1,70 +1,75 @@
+import numbers
+
 import pytest
-from ..src.anomaly import TransactionSimulator, AnomalyGenerator
-import numpy as np
+
+from src.payment_simulator.anomaly import AbstractAnomalyGenerator, AnomalyGenerator
 
 # Constants for tests
-SIM_PERIODS = 30
-TOTAL_BANKS = 20
-AVG_PAYMENTS = 100
-ALPHA = 0.01
-ALLOW_SELF_LOOP = True
+TOTAL_PERIOD = 2000
+ANOMALY_START = 101
+ANOMALY_END = 200
+PROB_START = 0.7
+PROB_END = 0.9
+LAMBDA_START = 100
+LAMBDA_END = 1000
+RATE = 0.2
 
-@pytest.fixture
-def transaction_simulator():
-    return TransactionSimulator(
-        total_banks=TOTAL_BANKS,
-        avg_payments=AVG_PAYMENTS,
-        alpha=ALPHA,
-        allow_self_loop=ALLOW_SELF_LOOP
-    )
 
 @pytest.fixture
 def anomaly_generator():
     return AnomalyGenerator(
-        anomaly_start=10,
-        anomaly_end=20,
-        prob_start=0.1,
-        prob_end=0.9,
-        lambda_start=1,
-        lambda_end=3,
-        rate=0.5
+        anomaly_start=ANOMALY_START,
+        anomaly_end=ANOMALY_END,
+        prob_start=PROB_START,
+        prob_end=PROB_END,
+        lambda_start=LAMBDA_START,
+        lambda_end=LAMBDA_END,
+        rate=LAMBDA_END,
     )
 
-def test_initial_conditions(transaction_simulator, anomaly_generator):
-    assert transaction_simulator.total_banks == TOTAL_BANKS
-    assert anomaly_generator.anomaly_start == 10
-    assert anomaly_generator.prob_end == 0.9
 
-def test_transaction_simulation(transaction_simulator):
-    # Simulate transactions and check for basic correctness
-    transaction_simulator.simulate_transactions(SIM_PERIODS)
-    transactions = transaction_simulator.get_transactions()
-    assert len(transactions) == SIM_PERIODS * TOTAL_BANKS * AVG_PAYMENTS
-    assert all(t >= 0 for t in transactions)  # Assuming transactions values are non-negative
+def test_initial_conditions(anomaly_generator):
+    # Check if the anomaly generator is correctly instantiated
+    assert isinstance(anomaly_generator, AbstractAnomalyGenerator)
+    assert isinstance(anomaly_generator, AnomalyGenerator)
 
-def test_anomaly_injection(transaction_simulator, anomaly_generator):
-    # Simulate transactions with anomalies
-    transaction_simulator.simulate_transactions(SIM_PERIODS, anomaly_generator)
-    transactions = transaction_simulator.get_transactions()
-    normal_transactions = transaction_simulator.get_transactions()  # Assuming a way to get transactions without anomalies for comparison
-    assert np.mean(transactions) > np.mean(normal_transactions)  # Check if anomalies increased the transaction values on average
+    # Ensure all initial settings are correct
+    assert anomaly_generator.anomaly_start == ANOMALY_START
+    assert anomaly_generator.anomaly_end == ANOMALY_END
+    assert anomaly_generator.prob_start == PROB_START
+    assert anomaly_generator.prob_end == PROB_END
+    assert anomaly_generator.lambda_start == LAMBDA_START
+    assert anomaly_generator.lambda_end == LAMBDA_END
+    assert (
+        anomaly_generator.rate == LAMBDA_END
+    )  # Check if 'rate' should be 'LAMBDA_END'
 
-def test_output_integrity(transaction_simulator):
-    transaction_simulator.simulate_transactions(SIM_PERIODS)
-    transactions = transaction_simulator.get_transactions()
-    assert isinstance(transactions, list)  # Assuming transactions are stored as a list
-    assert all(isinstance(t, float) for t in transactions)  # Assuming transactions are floating-point numbers
 
-def test_edge_cases(transaction_simulator):
-    # Test with zero transactions
-    transaction_simulator.avg_payments = 0
-    transaction_simulator.simulate_transactions(SIM_PERIODS)
-    transactions = transaction_simulator.get_transactions()
-    assert len(transactions) == 0
+def test_output_type(anomaly_generator):
+    # Test that the anomaly generator outputs a real number
+    assert isinstance(anomaly_generator(0), numbers.Real)
+    assert isinstance(anomaly_generator(0.0), numbers.Real)
 
-    # Test with the maximum number of banks
-    transaction_simulator.total_banks = 1000  # Arbitrary large number
-    transaction_simulator.avg_payments = 1  # Reducing payments to manage performance
-    transaction_simulator.simulate_transactions(1)  # Only one period for performance
-    transactions = transaction_simulator.get_transactions()
-    assert len(transactions) == 1000
+
+def test_run(anomaly_generator):
+    # Test the anomaly generator's output over several runs for stochastic behavior
+    half_period = int(TOTAL_PERIOD / 2)
+    min_anomalies = 50  # Minimum expected anomalies
+    max_anomalies = 100  # Maximum expected anomalies
+
+    for _ in range(100):  # Run the generator multiple times
+        anomaly_count = 0
+
+        for i in range(-half_period, half_period):
+            output = anomaly_generator(i)
+
+            # Assert that outputs outside the anomaly period are zero
+            if i < ANOMALY_START or i > ANOMALY_END:
+                assert output == 0.0
+
+            # Count non-zero outputs to track anomalies
+            if output != 0:
+                anomaly_count += 1
+
+        # Check if anomalies are within the expected range
+        assert min_anomalies <= anomaly_count <= max_anomalies
