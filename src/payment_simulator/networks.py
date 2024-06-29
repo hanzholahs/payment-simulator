@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 import networkx as nx
 import numpy as np
+from numpy.random import randint
 
 
 class AbstractPaymentNetwork(ABC):
@@ -9,7 +10,7 @@ class AbstractPaymentNetwork(ABC):
         """
         Initializes the abstract payment network with a graph attribute.
         """
-        self.G: nx.DiGraph = None
+        self.G: nx.Graph = None
 
     @abstractmethod
     def simulate_payments(self, init_banks: int | None):
@@ -155,7 +156,7 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
 
             # Determine the number of new banks to add in the next iteration
             n_addition = np.minimum(
-                np.random.randint(1, increment), self.total_banks - len(self.G.nodes)
+                randint(1, increment), self.total_banks - len(self.G.nodes)
             )
             if n_addition <= 0:
                 break
@@ -218,51 +219,51 @@ class GroupedPaymentNetwork(AbstractPaymentNetwork):
         increment : int, optional
             The number of banks to add in each iteration.
         """
-        bank_groups_count = np.array(self.bank_groups)
-        bank_groups_count = np.round(
-            self.total_banks * (bank_groups_count / bank_groups_count.sum())
+
+        groups_count = np.array(self.bank_groups)
+        groups_count = np.round(
+            self.total_banks * (groups_count / groups_count.sum())
         ).astype(int)
-        bank_groups_count[-1] += self.total_banks - bank_groups_count.sum()
+        groups_count[-1] += self.total_banks - groups_count.sum()
+
+        n_nodes = 0
 
         if init_banks is None:
-            init_banks = int(1 + np.ceil(bank_groups_count[0] / 2))
+            init_banks = int(1 + np.ceil(groups_count[0] / 2))
 
         # Initialize the graph with some nodes
         self.G = nx.DiGraph()  # graph network
-        self.G.add_nodes_from(list(range(init_banks)), group=0)
 
-        # Initialize preference vector
+        # Initialize the preference vector
         self.h = np.ones(init_banks, dtype=float)
 
-        # Set number of payments for the iteration
-        n_payments = self.avg_payments * init_banks
+        # Track the number of nodes
+        n_nodes = 0
 
         # Simulate payment network
-        for group, cumulative_limit in enumerate(np.cumsum(bank_groups_count)):
-            while len(self.G.nodes) <= cumulative_limit:
-                # Simulate transactions
-                for _ in range(n_payments):
-                    self._create_transaction()
-
+        for group, cum_limit in enumerate(np.cumsum(groups_count)):
+            # Add nodes until meet group cumulative limit
+            while n_nodes <= cum_limit:
                 # Determine the number of new banks to add in the next iteration
-                n_addition = np.minimum(
-                    np.random.randint(1, increment),
-                    cumulative_limit - len(self.G.nodes),
-                )
-                if n_addition <= 0:
-                    break
+                if n_nodes == 0:
+                    n_addition = init_banks
+                else:
+                    n_addition = np.minimum(randint(1, increment), cum_limit - n_nodes)
+                    if n_addition <= 0:
+                        break
+                    # Update the preference vector
+                    self.h = np.append(self.h, np.ones(n_addition))
 
                 # Initialize the next bank/node
-                new_nodes = list(
-                    range(len(self.G.nodes), len(self.G.nodes) + n_addition)
-                )
+                new_nodes = list(range(n_nodes, n_nodes + n_addition))
                 self.G.add_nodes_from(new_nodes, group=group)
 
-                # Update the preference vector
-                self.h = np.append(self.h, np.ones(n_addition))
+                # Simulate transactions
+                for _ in range(self.avg_payments * n_addition):
+                    self._create_transaction()
 
-                # Update the number of payments for the next iteration
-                n_payments = self.avg_payments * n_addition
+                # Keep track of the number of nodes
+                n_nodes += len(new_nodes)
 
 
 if __name__ == "__main__":
@@ -289,12 +290,14 @@ if __name__ == "__main__":
     print(network.extract_link_matrix(False).sum() == total_banks * avg_payments)
 
     g_network = GroupedPaymentNetwork(
-        total_banks=25,
-        bank_groups=[10, 35, 23, 42],
-        avg_payments=100,
+        total_banks=324,
+        bank_groups=[15, 25, 30, 30],
+        avg_payments=213,
         alpha=0.01,
         allow_self_loop=False,
     )
     g_network.simulate_payments(increment=25, init_banks=5)
     print("Network links:")
-    print(np.round(g_network.extract_link_matrix(), 4))
+    print(324 * 213)
+    print(g_network.extract_link_matrix(False).sum())
+    # print(np.round(g_network.extract_link_matrix(), 4))
