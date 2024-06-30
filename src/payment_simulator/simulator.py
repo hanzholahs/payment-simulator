@@ -4,9 +4,8 @@ from typing import Any, Callable
 
 import pandas as pd
 
-from .anomaly import AbstractAnomalyGenerator, AnomalyGenerator
-from .networks import AbstractPaymentNetwork, SimplePaymentNetwork
-from .utils import random_payment_timing, random_payment_value
+from .anomaly import AbstractAnomalyGenerator
+from .networks import AbstractPaymentNetwork
 
 
 class AbstractTransactionSim(ABC):
@@ -246,62 +245,3 @@ class AnomalyTransactionSim(AbstractTransactionSim):
                     )  # Store transaction details
 
         self.payments = all_payments
-
-
-if __name__ == "__main__":
-    sim_periods = list(range(15))
-
-    sim_params = {
-        "open_time": "06:30:00",
-        "close_time": "18:30:00",
-        "value_fn": random_payment_value,
-        "timing_fn": random_payment_timing,
-    }
-
-    payment_network = SimplePaymentNetwork(
-        total_banks=10, avg_payments=15, alpha=0.01, allow_self_loop=False
-    )
-
-    anomaly_generator = AnomalyGenerator(
-        anomaly_start=5,
-        anomaly_end=10,
-        prob_start=0.8,
-        prob_end=1,
-        lambda_start=0.5,
-        lambda_end=2.5,
-        rate=0.5,
-    )
-
-    normal_transactions = TransactionSim(
-        sim_id=1, network=payment_network, **sim_params
-    )
-    normal_transactions.run(sim_periods)
-
-    payments1 = normal_transactions.get_payments_df()
-    print(payments1.head(3))
-    print(payments1.tail(3))
-
-    anomaly_transactions = AnomalyTransactionSim(
-        sim_id=2, network=payment_network, anomaly=anomaly_generator, **sim_params
-    )
-    anomaly_transactions.run(sim_periods)
-
-    payments2 = anomaly_transactions.get_payments_df()
-    print(payments2.head(3))
-    print(payments2.tail(3))
-
-    print(f"Total Transaction of Normal RTGS  : {payments1['Value'].sum():.3f}")
-    print(f"Total Transaction of Anomaly RTGS : {payments2['Value'].sum():.3f}")
-
-    correct = 0
-    test_len = 50
-
-    for _ in range(test_len):
-        normal_transactions.run(sim_periods)
-        anomaly_transactions.run(sim_periods)
-        x1 = normal_transactions.get_payments_df()["Value"].sum()
-        x2 = anomaly_transactions.get_payments_df()["Value"].sum()
-        if x2 > x1:
-            correct += 1
-
-    print(f"Success rate: {correct / test_len * 100:.2f}%")

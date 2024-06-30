@@ -56,18 +56,3 @@ class AnomalyGenerator(AbstractAnomalyGenerator):
         anomaly_val = np.random.exponential(lambda_val)
 
         return anomaly_prob * anomaly_val
-
-
-if __name__ == "__main__":
-    gen = AnomalyGenerator(
-        anomaly_start=10,
-        anomaly_end=20,
-        prob_start=0.2,
-        prob_end=0.8,
-        lambda_start=1e2,
-        lambda_end=1e3,
-        rate=0.5,
-    )
-
-    for i in range(25):
-        print(f"{i:2d} : {gen(i)}")
