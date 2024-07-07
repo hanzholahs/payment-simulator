@@ -9,16 +9,10 @@ This package is currently **under development**. For any inquiries regarding the
 * Hanzholah Shobri (hanzholahs@gmail.com)
 * Farhan M Sumadiredja (farhansumadiredja@gmail.com)
 
-<!-- ## Installation
-
-```bash
-$ pip install payments_imulator
-``` -->
-
 ## Usage
 
 ```python
-import payment_simulator as ps
+from payment_simulator.simulator as AnomalyTransactionSim
 from payment_simulator.anomaly import AnomalyGenerator
 from payment_simulator.networks import SimplePaymentNetwork
 from payment_simulator.utils import random_payment_timing, random_payment_value
@@ -46,7 +40,7 @@ anomaly_generator = AnomalyGenerator(
     rate=0.5,
 )
 
-anomaly_transactions = ps.AnomalyTransactionSim(
+anomaly_transactions = AnomalyTransactionSim(
     sim_id=2,
     network=payment_network,
     anomaly=anomaly_generator,
@@ -60,7 +54,7 @@ anomaly_transactions.get_payments_df()
 
 ## Contributing
 
-Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
+Interested in contributing? Check out the [contributing guidelines](./CONTRIBUTING.md). Please note that this project is released with a [Code of Conduct](./CONDUCT.md). By contributing to this project, you agree to abide by its terms.
 
 ## License
 

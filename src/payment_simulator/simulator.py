@@ -157,12 +157,16 @@ class TransactionSim(AbstractTransactionSim):
 
             # Process each link in the simulated payment network
             for (i, j), data in self.network.G.edges.items():
+
                 # Simulate transactions based on the weight of each link
                 for _ in range(data["weight"]):
-                    timing = self.timing_fn(
-                        self.open_time, self.close_time
-                    )  # Calculate transaction timing
-                    value = self.value_fn()  # Calculate transaction value
+                    # Calculate transaction timing
+                    timing = self.timing_fn(self.open_time, self.close_time)
+
+                    # Calculate transaction value
+                    value = self.value_fn()
+                    
+                    # Store transaction details
                     all_payments.append((period, timing, i, j, 1, value))
 
         self.payments = all_payments
@@ -232,16 +236,16 @@ class AnomalyTransactionSim(AbstractTransactionSim):
 
             # Process each link in the simulated payment network
             for (i, j), data in self.network.G.edges.items():
+
                 # Simulate transactions based on the weight of each link
                 for _ in range(data["weight"]):
-                    timing = self.timing_fn(
-                        self.open_time, self.close_time
-                    )  # Calculate transaction timing
-                    value = self.value_fn() + self.anomaly(
-                        period
-                    )  # Calculate transaction value with anomaly
-                    all_payments.append(
-                        (period, timing, i, j, 1, value)
-                    )  # Store transaction details
+                    # Calculate transaction timing
+                    timing = self.timing_fn(self.open_time, self.close_time)
+
+                    # Calculate transaction value with anomaly
+                    value = self.value_fn() + self.anomaly(period)
+
+                    # Store transaction details
+                    all_payments.append((period, timing, i, j, 1, value))
 
         self.payments = all_payments
