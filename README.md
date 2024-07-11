@@ -2,14 +2,24 @@
 
 The RTGS Simulation Package is specifically crafted to simulate large-value transactions within Real-Time Gross Settlement (RTGS) systems. It provides a robust set of tools designed to assist researchers and central bankers in analyzing the performance and reliability of RTGS systems under a variety of scenarios. This package is ideal for assessing the robustness of systems and the behavior of their participants through both normal transaction flows and controlled anomalies.
 
-This development was inspired by an analysis aimed at anomaly detection in RTGS systems. You can explore the foundational [analysis notebook](./docs/anomaly_detection.ipynb). The included notebook is designed to simulate, analyze, and detect both typical transactions and anomalies within RTGS transactions. The analysis focus on enhancing the robustness and reliability of financial transactions through three main types of analysis: (i) Synthetic Data Generation;  (ii) Bank Run Simulation; and (iii) Anomaly Detection Model.
+This development was inspired by an analysis aimed at anomaly detection in RTGS systems. You can explore the foundational analysis notebook from this repo titled 'anomaly_detection.ipynb'. The included notebook is designed to simulate, analyze, and detect both typical transactions and anomalies within RTGS transactions. The analysis focus on enhancing the robustness and reliability of financial transactions through three main types of analysis: (i) Synthetic Data Generation;  (ii) Bank Run Simulation; and (iii) Anomaly Detection Model.
 
 This package is currently **under development**. For any inquiries regarding the use or further development of these analyses, please feel free to raise an issue in the repository or contact the authors directly.
 
 * Hanzholah Shobri (hanzholahs@gmail.com)
 * Farhan M Sumadiredja (farhansumadiredja@gmail.com)
 
+## Installation
+
+This package hasn't been added into PyPI index. To use the package, you can install it from the github repository.
+
+```bash
+$ pip install git+https://github.com/hanzholahs/payment_simulator
+```
+
 ## Usage
+
+`payment_simulator` can be used to simulate transactions in an RTGS system. It can also introduce anomaly in the payment flow to represent bank run by adding some value to outgoing transactions randomly based on statistical distribution. The following code demonstrates how the package might be used. 
 
 ```python
 from payment_simulator.simulator as AnomalyTransactionSim
@@ -54,8 +64,8 @@ anomaly_transactions.get_payments_df()
 
 ## Contributing
 
-Interested in contributing? Check out the [contributing guidelines](./CONTRIBUTING.md). Please note that this project is released with a [Code of Conduct](./CONDUCT.md). By contributing to this project, you agree to abide by its terms.
+Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
 
 ## License
 
-`payments_imulator` is licensed under the terms of the MIT license. Check the [LICENSE](./LICENSE) file for details.
+`payments_imulator` is licensed under the terms of the MIT license. Check the LICENSE file for details.
