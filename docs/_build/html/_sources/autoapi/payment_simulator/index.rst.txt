@@ -1,0 +1,475 @@
+payment_simulator
+=================
+
+.. py:module:: payment_simulator
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/payment_simulator/anomaly/index
+   /autoapi/payment_simulator/networks/index
+   /autoapi/payment_simulator/simulator/index
+   /autoapi/payment_simulator/utils/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   payment_simulator.AbstractAnomalyGenerator
+   payment_simulator.AnomalyGenerator
+   payment_simulator.AbstractPaymentNetwork
+   payment_simulator.SimplePaymentNetwork
+   payment_simulator.GroupedPaymentNetwork
+   payment_simulator.AbstractAnomalyGenerator
+   payment_simulator.AbstractPaymentNetwork
+   payment_simulator.AbstractTransactionSim
+   payment_simulator.TransactionSim
+   payment_simulator.AnomalyTransactionSim
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   payment_simulator.anomaly_parameter
+   payment_simulator.anomaly_parameter
+   payment_simulator.random_payment_value
+   payment_simulator.random_payment_timing
+   payment_simulator.calc_num_payments
+   payment_simulator.calculate_network_params
+
+
+Package Contents
+----------------
+
+.. py:function:: anomaly_parameter(x_start: float, x_end: float, rate: float, current: int, anomaly_start: int, anomaly_end: int) -> float
+
+.. py:class:: AbstractAnomalyGenerator
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+
+   .. py:method:: __call__(current_period: int) -> float
+      :abstractmethod:
+
+
+
+.. py:class:: AnomalyGenerator(anomaly_start: int, anomaly_end: int, prob_start: float, prob_end: float, lambda_start: float, lambda_end: float, rate: float)
+
+   Bases: :py:obj:`AbstractAnomalyGenerator`
+
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+
+   .. py:method:: __call__(current_period: int) -> float
+
+
+.. py:class:: AbstractPaymentNetwork
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+
+   .. py:method:: simulate_payments(init_banks: int | None)
+      :abstractmethod:
+
+
+      Abstract method to simulate payments.
+      This method should be implemented by subclasses.
+
+
+
+   .. py:method:: extract_link_matrix(prop: bool = True) -> numpy.ndarray
+
+      Extracts and returns the adjacency matrix of the network graph.
+
+      :param prop: If True, returns the matrix as proportions of the total transactions. If False, returns raw transaction counts.
+      :type prop: bool, optional
+
+      :returns: A numpy ndarray representing the adjacency matrix of the network graph.
+      :rtype: np.ndarray
+
+
+
+   .. py:method:: _create_transaction()
+
+      Creates a transaction between randomly selected banks in the network.
+
+
+
+   .. py:method:: _random_bank(prob) -> int
+
+      Selects a bank for initiating a transaction based on a weighted probability distribution.
+
+      :param prob: Array of probabilities for each bank.
+      :type prob: np.ndarray
+
+      :returns: The selected bank's identifier.
+      :rtype: int
+
+
+
+   .. py:method:: _payment_link(sender: int, receiver: int) -> None
+
+      Creates or updates a payment link between two banks in the simulation graph.
+
+      :param sender: The identifier of the bank initiating the payment.
+      :type sender: int
+      :param receiver: The identifier of the bank receiving the payment.
+      :type receiver: int
+
+
+
+.. py:class:: SimplePaymentNetwork(total_banks: int, avg_payments: int, alpha: float = 0, allow_self_loop: bool = False)
+
+   Bases: :py:obj:`AbstractPaymentNetwork`
+
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+
+   .. py:method:: simulate_payments(init_banks: int | None = None, increment: int = 2) -> None
+
+      Simulates the payment processing between banks for a given period, starting with an initial set of banks.
+
+      :param init_banks: Initial number of banks to start the simulation with. If None, it defaults to half of the total banks rounded up.
+      :type init_banks: int, optional
+      :param increment: The number of banks to add in each iteration.
+      :type increment: int, optional
+
+
+
+.. py:class:: GroupedPaymentNetwork(total_banks: int, bank_groups: list[int | float], avg_payments: int, alpha: float = 0, allow_self_loop: bool = False)
+
+   Bases: :py:obj:`AbstractPaymentNetwork`
+
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+
+   .. py:method:: simulate_payments(init_banks: int | None = None, increment: int = 2) -> None
+
+      Simulates the payment processing between banks for a given period, starting with an initial set of banks.
+
+      :param init_banks: Initial number of banks to start the simulation with. If None, it defaults to half of the total banks rounded up.
+      :type init_banks: int, optional
+      :param increment: The number of banks to add in each iteration.
+      :type increment: int, optional
+
+
+
+.. py:class:: AbstractAnomalyGenerator
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+
+   .. py:method:: __call__(current_period: int) -> float
+      :abstractmethod:
+
+
+
+.. py:class:: AbstractPaymentNetwork
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+
+   .. py:method:: simulate_payments(init_banks: int | None)
+      :abstractmethod:
+
+
+      Abstract method to simulate payments.
+      This method should be implemented by subclasses.
+
+
+
+   .. py:method:: extract_link_matrix(prop: bool = True) -> numpy.ndarray
+
+      Extracts and returns the adjacency matrix of the network graph.
+
+      :param prop: If True, returns the matrix as proportions of the total transactions. If False, returns raw transaction counts.
+      :type prop: bool, optional
+
+      :returns: A numpy ndarray representing the adjacency matrix of the network graph.
+      :rtype: np.ndarray
+
+
+
+   .. py:method:: _create_transaction()
+
+      Creates a transaction between randomly selected banks in the network.
+
+
+
+   .. py:method:: _random_bank(prob) -> int
+
+      Selects a bank for initiating a transaction based on a weighted probability distribution.
+
+      :param prob: Array of probabilities for each bank.
+      :type prob: np.ndarray
+
+      :returns: The selected bank's identifier.
+      :rtype: int
+
+
+
+   .. py:method:: _payment_link(sender: int, receiver: int) -> None
+
+      Creates or updates a payment link between two banks in the simulation graph.
+
+      :param sender: The identifier of the bank initiating the payment.
+      :type sender: int
+      :param receiver: The identifier of the bank receiving the payment.
+      :type receiver: int
+
+
+
+.. py:class:: AbstractTransactionSim(network: payment_simulator.networks.AbstractPaymentNetwork, value_fn: Callable, timing_fn: Callable, open_time: str = '08:00:00', close_time: str = '17:00:00')
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Abstract base class for simulating transaction scenarios in a financial network.
+
+   This class is intended to be subclassed to create specific transaction simulation scenarios
+   by providing concrete implementations for transaction value calculations and timing.
+
+   :param network: An instance of a payment network which handles the simulation of payments.
+   :type network: AbstractPaymentNetwork
+   :param value_fn: A function to calculate the value of each transaction.
+   :type value_fn: Callable
+   :param timing_fn: A function to determine the timing of each transaction within the operational hours.
+   :type timing_fn: Callable
+   :param open_time: The opening time of the transaction window each day, formatted as "HH:MM:SS".
+   :type open_time: str, optional
+   :param close_time: The closing time of the transaction window each day, formatted as "HH:MM:SS".
+   :type close_time: str, optional
+
+   .. attribute:: payments
+
+      A list to store all payment transactions. Each transaction is stored as a tuple containing
+      period, timing, sender, receiver, count, and value of the transaction.
+
+      :type: List[tuple]
+
+   .. attribute:: network
+
+      The payment network instance used for simulating transactions.
+
+      :type: AbstractPaymentNetwork
+
+   .. attribute:: value_fn
+
+      Function used to calculate the transaction value.
+
+      :type: Callable
+
+   .. attribute:: timing_fn
+
+      Function used to determine the transaction timing.
+
+      :type: Callable
+
+   .. attribute:: open_time
+
+      Parsed opening time for transactions.
+
+      :type: datetime.time
+
+   .. attribute:: close_time
+
+      Parsed closing time for transactions.
+
+      :type: datetime.time
+
+   .. method:: get_payments_df() -> pd.DataFrame
+
+      Returns a DataFrame containing all simulated transactions with detailed columns.
+
+   .. method:: simulate_day(init_banks: int | None = None)
+
+      Simulates a day's transactions using the network's payment simulation function.
+
+
+
+   .. py:method:: get_payments_df() -> pandas.DataFrame
+
+      Constructs and returns a DataFrame from the accumulated payment transactions.
+
+      :returns: DataFrame containing transaction data with columns for period, time, sender, receiver,
+                count, and value.
+      :rtype: pd.DataFrame
+
+
+
+   .. py:method:: simulate_day(init_banks: int | None = None)
+
+      Simulates transaction activities for a single day, optionally initializing a specific number of banks.
+
+      :param init_banks: Number of banks to initialize at the start of the day's simulation. If None, the default
+                         setup of the network is used.
+      :type init_banks: int, optional
+
+
+
+.. py:class:: TransactionSim(sim_id: Any, **kwargs)
+
+   Bases: :py:obj:`AbstractTransactionSim`
+
+
+   Simulation class for generating transaction patterns in a financial network.
+
+   This class extends `AbstractTransactionSim` and simulates transactions across
+   various periods, without introducing anomalies.
+
+   :param sim_id: An identifier for the simulation, which can be of any type.
+   :type sim_id: Any
+   :param \*\*kwargs: Additional keyword arguments that are passed to the base class `AbstractTransactionSim`.
+   :type \*\*kwargs: dict
+
+   .. attribute:: sim_id
+
+      Stores the identifier for the simulation.
+
+      :type: Any
+
+   .. attribute:: payments
+
+      Accumulates all the payments made during the simulation.
+
+      :type: list
+
+   .. method:: run(sim_periods: list[int]) -> None
+
+      Executes the simulation over specified time periods, generating standard payments.
+
+
+
+   .. py:method:: run(sim_periods: list[int]) -> None
+
+      Run the simulation for a list of time periods, each representing a discrete simulation interval.
+
+      :param sim_periods: List of periods during which the simulation runs. Each period typically represents a day.
+      :type sim_periods: list[int]
+
+      .. rubric:: Notes
+
+      During each period, the simulation:
+      1. Generates a payment network for the day.
+      2. Iterates over all links (i.e., bank pairs) in the network.
+      3. For each link, generates transactions based on the link weight (number of transactions).
+      4. Calculates the timing and value of each transaction without anomalies.
+      5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.
+
+
+
+.. py:class:: AnomalyTransactionSim(sim_id: Any, anomaly: payment_simulator.anomaly.AbstractAnomalyGenerator, **kwargs)
+
+   Bases: :py:obj:`AbstractTransactionSim`
+
+
+   Simulation class for generating anomalous transaction patterns in a financial network.
+
+   :param sim_id: An identifier for the simulation, which can be of any type.
+   :type sim_id: Any
+   :param anomaly: An anomaly generator instance that modifies payment values to simulate anomalies.
+   :type anomaly: AbstractAnomalyGenerator
+   :param \*\*kwargs: Additional keyword arguments that are passed to the base class `AbstractTransactionSim`.
+   :type \*\*kwargs: dict
+
+   .. attribute:: sim_id
+
+      Stores the identifier for the simulation.
+
+      :type: Any
+
+   .. attribute:: anomaly
+
+      Holds the anomaly generator used in the simulation.
+
+      :type: AbstractAnomalyGenerator
+
+   .. attribute:: payments
+
+      Accumulates all the payments made during the simulation, including anomalies.
+
+      :type: list
+
+   .. method:: run(sim_periods: list[int]) -> None
+
+      Executes the simulation over specified time periods, generating payments and incorporating anomalies.
+
+
+
+   .. py:method:: run(sim_periods: list[int]) -> None
+
+      Run the simulation for a list of time periods, each representing a discrete simulation interval.
+
+      :param sim_periods: List of periods during which the simulation runs. Each period should typically represent a day.
+      :type sim_periods: list[int]
+
+      .. rubric:: Notes
+
+      During each period, the simulation:
+      1. Generates a payment network for the day.
+      2. Iterates over all links (i.e., bank pairs) in the network.
+      3. For each link, generates transactions based on the link weight (number of transactions).
+      4. Applies an anomaly to the value of each transaction.
+      5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.
+
+
+
+.. py:function:: anomaly_parameter(x_start: float, x_end: float, rate: float, current: int, anomaly_start: int, anomaly_end: int) -> float
+
+.. py:function:: random_payment_value() -> float
+
+   Computes a random value based on a log-normal distribution.
+
+   :param args: Parameters for the lognormal distribution, typically mean and standard deviation.
+   :return: A random value sampled from a log-normal distribution.
+
+
+.. py:function:: random_payment_timing(open_time: datetime.time, close_time: datetime.time) -> datetime.time
+
+   Generates a random datetime within the operation period defined by the open and close times.
+
+   :param open_time: Opening time of the operation period.
+   :param close_time: Closing time of the operation, must be after the open time.
+   :param args: Additional arguments to be passed to the uniform distribution, typically the bounds for the random period.
+   :return: A random datetime within the specified operation period.
+
+
+.. py:function:: calc_num_payments(G: networkx.DiGraph) -> int
+
+.. py:function:: calculate_network_params(G: networkx.DiGraph) -> dict
+
+   Calculates and returns various parameters of the simulation such as connectivity, reciprocity, and degrees.
+
+   :return: Dictionary containing calculated simulation parameters.
+
+

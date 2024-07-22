@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Network &mdash; payment_simulator  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Anomaly" href="example_anomaly.html" />
+    <link rel="prev" title="payment_simulator: Simulating Large-value Transactions Data" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            payment_simulator
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Payment Network</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simple-payment-network">Simple Payment Network</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#simulating-payments">Simulating Payments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#checking-the-results">Checking the Results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#grouped-payment-network">Grouped Payment Network</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example_anomaly.html">Anomaly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_simulator.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">payment_simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Payment Network</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/example_networks.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="payment-network">
+<h1>Payment Network<a class="headerlink" href="#payment-network" title="Link to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">payment_simulator</span></code> package is designed to simulate payment transactions within large-value payment systems. While it is tailored for high-value transactions often seen in systems like RTGS (Real-Time Gross Settlement), it can also generate synthetic transaction data for other types of payment systems, including retail payments or blockchain-based platforms. This simulation is conducted through the creation of a payment network consisting of nodes (participants, typically banks) and edges (transactions between these participants). The network’s structure is randomly determined based on specified parameters. This guide demonstrates how to utilize the <code class="docutils literal notranslate"><span class="pre">SimplePaymentNetwork</span></code> and <code class="docutils literal notranslate"><span class="pre">GroupedPaymentNetwork</span></code> classes to generate and analyze these networks.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">payment_simulator</span> <span class="kn">import</span> <span class="n">GroupedPaymentNetwork</span><span class="p">,</span> <span class="n">SimplePaymentNetwork</span>
+<span class="kn">from</span> <span class="nn">payment_simulator.utils</span> <span class="kn">import</span> <span class="n">calculate_network_params</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">TOTAL_BANKS</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">INITIAL_BANKS</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">INCREMENT_BANKS</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">1e-5</span>
+<span class="n">AVG_PAYMENTS</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">ALLOW_SELF_LOOP</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="simple-payment-network">
+<h2>Simple Payment Network<a class="headerlink" href="#simple-payment-network" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">SimplePaymentNetwork</span></code> class simulates a payment network by sequentially adding banks and transactions. It selects random senders and receivers based on a preferential attachment vector, which is adjusted by a parameter alpha to increase the likelihood of previously chosen banks being selected again. This class also allows the configuration of self-transactions, where banks can send payments to themselves.</p>
+<section id="simulating-payments">
+<h3>Simulating Payments<a class="headerlink" href="#simulating-payments" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">simulate_payments</span></code> method executes the network simulation. It starts by adding a set of <code class="docutils literal notranslate"><span class="pre">initial_banks</span></code> that begin transacting amongst themselves. In each subsequent iteration, additional banks are introduced according to the <code class="docutils literal notranslate"><span class="pre">increment</span></code> parameter, increasing the complexity of the network.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">SimplePaymentNetwork</span><span class="p">(</span><span class="n">total_banks</span><span class="o">=</span><span class="n">TOTAL_BANKS</span><span class="p">,</span>
+                               <span class="n">avg_payments</span><span class="o">=</span><span class="n">AVG_PAYMENTS</span><span class="p">,</span>
+                               <span class="n">allow_self_loop</span><span class="o">=</span><span class="n">ALLOW_SELF_LOOP</span><span class="p">,</span>
+                               <span class="n">alpha</span><span class="o">=</span><span class="n">ALPHA</span><span class="p">)</span>
+
+<span class="n">network</span><span class="o">.</span><span class="n">simulate_payments</span><span class="p">(</span><span class="n">increment</span><span class="o">=</span><span class="n">INCREMENT_BANKS</span><span class="p">,</span> <span class="n">init_banks</span><span class="o">=</span><span class="n">INITIAL_BANKS</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="checking-the-results">
+<h3>Checking the Results<a class="headerlink" href="#checking-the-results" title="Link to this heading"></a></h3>
+<p>After running the simulation, you can examine the final preferential attachment using the <code class="docutils literal notranslate"><span class="pre">network.h</span></code> attribute. The <code class="docutils literal notranslate"><span class="pre">extract_link_matrix</span></code> method provides a normalized view of the transaction links between participants, indicating the proportion of transactions between each pair of banks.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Preferential Attachment of Banks:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">h</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Network links:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(</span><span class="n">prop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Network links:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(),</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Preferential Attachment of Banks:
+[1.00425 1.00399 1.00378 1.00234 1.00204 1.00119 1.00087 1.00061 1.00051
+ 1.00042]
+
+Network links:
+[[ 0 78 66 25 22 15  8  2  3  3]
+ [63  0 61 20 22  8  1  3  1  2]
+ [62 78  0 28 20  4  5  1  3  1]
+ [28 21 16  0 28  5  5  2  2  3]
+ [24 13 12 19  0  9  4  4  5  1]
+ [12  9  9 12  7  0  4  0  4  2]
+ [ 6 11  4 12  4 10  0  5  0  2]
+ [ 2  3  4  5  5  3  4  0  7  5]
+ [ 5  3  2  2  4  2  0  2  0  3]
+ [ 1  2  2  1  1  4  2  4  3  0]]
+
+Network links:
+[[0.    0.078 0.066 0.025 0.022 0.015 0.008 0.002 0.003 0.003]
+ [0.063 0.    0.061 0.02  0.022 0.008 0.001 0.003 0.001 0.002]
+ [0.062 0.078 0.    0.028 0.02  0.004 0.005 0.001 0.003 0.001]
+ [0.028 0.021 0.016 0.    0.028 0.005 0.005 0.002 0.002 0.003]
+ [0.024 0.013 0.012 0.019 0.    0.009 0.004 0.004 0.005 0.001]
+ [0.012 0.009 0.009 0.012 0.007 0.    0.004 0.    0.004 0.002]
+ [0.006 0.011 0.004 0.012 0.004 0.01  0.    0.005 0.    0.002]
+ [0.002 0.003 0.004 0.005 0.005 0.003 0.004 0.    0.007 0.005]
+ [0.005 0.003 0.002 0.002 0.004 0.002 0.    0.002 0.    0.003]
+ [0.001 0.002 0.002 0.001 0.001 0.004 0.002 0.004 0.003 0.   ]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The distribution of transactions can be visualized using a heatmap, where lighter areas represent a higher frequency of transactions between nodes. This visualization aligns with network theories suggesting that most nodes typically have fewer connections.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(</span><span class="kc">False</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Heatmap of transaction links&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/36cb661fbcd92f2b3d3f84d86fb3aa0b3e3dd90aa6ce677d058a5921df81463e.png" src="_images/36cb661fbcd92f2b3d3f84d86fb3aa0b3e3dd90aa6ce677d058a5921df81463e.png" />
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">payment_simulator</span></code> package comes equipped with utility functions to help analyze key network metrics that can provide insights into the structure and efficiency of the network, which is <code class="docutils literal notranslate"><span class="pre">calculate_network_params</span></code>. It computes various network metrics such as the number of nodes, number of links, connectivity, reciprocity, average degree, and the maximum in and out degree values.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">calculate_network_params</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">G</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number of nodes       10.000000
+Number of links       87.000000
+Connectivity           0.966667
+Reciprocity            0.988506
+Average Degree (k)    17.400000
+Max (k-in)             9.000000
+Max (k-out)            9.000000
+dtype: float64
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="grouped-payment-network">
+<h2>Grouped Payment Network<a class="headerlink" href="#grouped-payment-network" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">GroupedPaymentNetwork</span></code> leverages a given list of transaction proportions. This proportion represent the size of the group within the network from the biggest to the smallest. It works similarly when deciding the sender and receiver, which is by selecting randomly from pool of nodes with their preferential attachement score. The different lies in how the nodes and edges are added to the network.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g_total_banks</span> <span class="o">=</span> <span class="mi">43</span>
+<span class="n">g_avg_payments</span> <span class="o">=</span> <span class="mi">35</span>
+<span class="n">g_alpha</span> <span class="o">=</span> <span class="mf">1e-5</span>
+<span class="n">g_bank_groups</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">]</span>
+
+<span class="n">g_network</span> <span class="o">=</span> <span class="n">GroupedPaymentNetwork</span><span class="p">(</span>
+    <span class="n">total_banks</span><span class="o">=</span><span class="n">g_total_banks</span><span class="p">,</span>
+    <span class="n">bank_groups</span><span class="o">=</span><span class="n">g_bank_groups</span><span class="p">,</span>
+    <span class="n">avg_payments</span><span class="o">=</span><span class="n">g_avg_payments</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="n">g_alpha</span><span class="p">,</span>
+    <span class="n">allow_self_loop</span><span class="o">=</span><span class="n">ALLOW_SELF_LOOP</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">g_network</span><span class="o">.</span><span class="n">simulate_payments</span><span class="p">(</span><span class="n">increment</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">init_banks</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Similar to the previous class, we can observe the preferential attachement as well as the link matrix.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Preferential Attachement of Banks:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">h</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Network links:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(</span><span class="n">prop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Network links:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(),</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="k">assert</span> <span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="n">g_total_banks</span> <span class="o">*</span> <span class="n">g_avg_payments</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Preferential Attachement of Banks:
+[1.00161 1.00146 1.00168 1.00177 1.00162 1.0016  1.00178 1.00158 1.00188
+ 1.00196 1.00092 1.00089 1.00076 1.00073 1.00061 1.00074 1.00076 1.00065
+ 1.00073 1.00055 1.00056 1.0004  1.00051 1.00064 1.00031 1.00039 1.00027
+ 1.00036 1.00031 1.00029 1.00024 1.00026 1.00024 1.00008 1.00028 1.00016
+ 1.00014 1.00009 1.00008 1.00009 1.00008 1.00001 1.00003]
+
+Network links:
+[[ 0  5 13 ...  0  1  0]
+ [ 4  0  4 ...  1  0  0]
+ [ 9  5  0 ...  0  0  0]
+ ...
+ [ 0  0  0 ...  0  0  0]
+ [ 0  0  0 ...  0  0  0]
+ [ 1  1  0 ...  0  0  0]]
+
+Network links:
+[[0.     0.0033 0.0086 ... 0.     0.0007 0.    ]
+ [0.0027 0.     0.0027 ... 0.0007 0.     0.    ]
+ [0.006  0.0033 0.     ... 0.     0.     0.    ]
+ ...
+ [0.     0.     0.     ... 0.     0.     0.    ]
+ [0.     0.     0.     ... 0.     0.     0.    ]
+ [0.0007 0.0007 0.     ... 0.     0.     0.    ]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We could also observe the similar pattern on the number of links for all nodes. Most nodes only have less than two connection to other nodes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(</span><span class="n">prop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Distribution of the number of links between nodes&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/0736ebcdeb53654964b06da915e65eed444af404b313ee1a09d82e1e5f48d6fb.png" src="_images/0736ebcdeb53654964b06da915e65eed444af404b313ee1a09d82e1e5f48d6fb.png" />
+</div>
+</div>
+<p>Here, the heatmap of links between two nodes for the grouped network.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(</span><span class="kc">False</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Heatmap of transaction links&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/7d4d6c8d23ff8b477480cc0e2f9528c532798978bbabe95b8db45ce95f62f53a.png" src="_images/7d4d6c8d23ff8b477480cc0e2f9528c532798978bbabe95b8db45ce95f62f53a.png" />
+</div>
+</div>
+<p>We can also calculate some network metrics.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">calculate_network_params</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">G</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number of nodes        43.000000
+Number of links       680.000000
+Connectivity            0.376523
+Reciprocity             0.600000
+Average Degree (k)     31.627907
+Max (k-in)             27.000000
+Max (k-out)            27.000000
+dtype: float64
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="payment_simulator: Simulating Large-value Transactions Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="example_anomaly.html" class="btn btn-neutral float-right" title="Anomaly" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Hanzholah Shobri.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

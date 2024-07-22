@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>payment_simulator: Simulating Large-value Transactions Data &mdash; payment_simulator  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Payment Network" href="example_networks.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            payment_simulator
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="example_networks.html">Payment Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_anomaly.html">Anomaly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_simulator.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">payment_simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">payment_simulator</span></code>: Simulating Large-value Transactions Data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="payment-simulator-simulating-large-value-transactions-data">
+<h1><code class="docutils literal notranslate"><span class="pre">payment_simulator</span></code>: Simulating Large-value Transactions Data<a class="headerlink" href="#payment-simulator-simulating-large-value-transactions-data" title="Link to this heading"></a></h1>
+<p>The RTGS Simulation Package is specifically crafted to simulate large-value transactions within Real-Time Gross Settlement (RTGS) systems. It provides a robust set of tools designed to assist researchers and central bankers in analyzing the performance and reliability of RTGS systems under a variety of scenarios. This package is ideal for assessing the robustness of systems and the behavior of their participants through both normal transaction flows and controlled anomalies.</p>
+<p>This development was inspired by an analysis aimed at anomaly detection in RTGS systems. You can explore the foundational analysis notebook from this repo titled ‘anomaly_detection.ipynb’. The included notebook is designed to simulate, analyze, and detect both typical transactions and anomalies within RTGS transactions. The analysis focus on enhancing the robustness and reliability of financial transactions through three main types of analysis: (i) Synthetic Data Generation;  (ii) Bank Run Simulation; and (iii) Anomaly Detection Model.</p>
+<p>This package is currently <strong>under development</strong>. For any inquiries regarding the use or further development of these analyses, please feel free to raise an issue in the repository or contact the authors directly.</p>
+<ul class="simple">
+<li><p>Hanzholah Shobri (hanzholahs&#64;gmail.com)</p></li>
+<li><p>Farhan M Sumadiredja (farhansumadiredja&#64;gmail.com)</p></li>
+</ul>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>This package hasn’t been added into PyPI index. To use the package, you can install it from the github repository.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/hanzholahs/payment_simulator
+</pre></div>
+</div>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">payment_simulator</span></code> can be used to simulate transactions in an RTGS system. It can also introduce anomaly in the payment flow to represent bank run by adding some value to outgoing transactions randomly based on statistical distribution. The following code demonstrates how the package might be used.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">payment_simulator.simulator</span> <span class="k">as</span> <span class="n">AnomalyTransactionSim</span>
+<span class="kn">from</span> <span class="nn">payment_simulator.anomaly</span> <span class="kn">import</span> <span class="n">AnomalyGenerator</span>
+<span class="kn">from</span> <span class="nn">payment_simulator.networks</span> <span class="kn">import</span> <span class="n">SimplePaymentNetwork</span>
+<span class="kn">from</span> <span class="nn">payment_simulator.utils</span> <span class="kn">import</span> <span class="n">random_payment_timing</span><span class="p">,</span> <span class="n">random_payment_value</span>
+
+<span class="n">sim_periods</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">))</span>
+
+<span class="n">sim_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;open_time&quot;</span><span class="p">:</span> <span class="s2">&quot;06:30:00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;close_time&quot;</span><span class="p">:</span> <span class="s2">&quot;18:30:00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;value_fn&quot;</span><span class="p">:</span> <span class="n">random_payment_value</span><span class="p">,</span>
+    <span class="s2">&quot;timing_fn&quot;</span><span class="p">:</span> <span class="n">random_payment_timing</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">payment_network</span> <span class="o">=</span> <span class="n">SimplePaymentNetwork</span><span class="p">(</span>
+    <span class="n">total_banks</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">avg_payments</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">allow_self_loop</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+
+<span class="n">anomaly_generator</span> <span class="o">=</span> <span class="n">AnomalyGenerator</span><span class="p">(</span>
+    <span class="n">anomaly_start</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">anomaly_end</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">prob_start</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+    <span class="n">prob_end</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">lambda_start</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">lambda_end</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+    <span class="n">rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">anomaly_transactions</span> <span class="o">=</span> <span class="n">AnomalyTransactionSim</span><span class="p">(</span>
+    <span class="n">sim_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">network</span><span class="o">=</span><span class="n">payment_network</span><span class="p">,</span>
+    <span class="n">anomaly</span><span class="o">=</span><span class="n">anomaly_generator</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">sim_params</span>
+<span class="p">)</span>
+
+<span class="n">anomaly_transactions</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">sim_periods</span><span class="p">)</span>
+
+<span class="n">anomaly_transactions</span><span class="o">.</span><span class="n">get_payments_df</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
+<p>Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.</p>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">payments_imulator</span></code> is licensed under the terms of the MIT license. Check the LICENSE file for details.</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="example_networks.html" class="btn btn-neutral float-right" title="Payment Network" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Hanzholah Shobri.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

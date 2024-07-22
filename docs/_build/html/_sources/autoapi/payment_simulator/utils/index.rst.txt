@@ -1,0 +1,50 @@
+payment_simulator.utils
+=======================
+
+.. py:module:: payment_simulator.utils
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   payment_simulator.utils.anomaly_parameter
+   payment_simulator.utils.random_payment_value
+   payment_simulator.utils.random_payment_timing
+   payment_simulator.utils.calc_num_payments
+   payment_simulator.utils.calculate_network_params
+
+
+Module Contents
+---------------
+
+.. py:function:: anomaly_parameter(x_start: float, x_end: float, rate: float, current: int, anomaly_start: int, anomaly_end: int) -> float
+
+.. py:function:: random_payment_value() -> float
+
+   Computes a random value based on a log-normal distribution.
+
+   :param args: Parameters for the lognormal distribution, typically mean and standard deviation.
+   :return: A random value sampled from a log-normal distribution.
+
+
+.. py:function:: random_payment_timing(open_time: datetime.time, close_time: datetime.time) -> datetime.time
+
+   Generates a random datetime within the operation period defined by the open and close times.
+
+   :param open_time: Opening time of the operation period.
+   :param close_time: Closing time of the operation, must be after the open time.
+   :param args: Additional arguments to be passed to the uniform distribution, typically the bounds for the random period.
+   :return: A random datetime within the specified operation period.
+
+
+.. py:function:: calc_num_payments(G: networkx.DiGraph) -> int
+
+.. py:function:: calculate_network_params(G: networkx.DiGraph) -> dict
+
+   Calculates and returns various parameters of the simulation such as connectivity, reciprocity, and degrees.
+
+   :return: Dictionary containing calculated simulation parameters.
+
+

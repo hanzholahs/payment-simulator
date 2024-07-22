@@ -1,0 +1,382 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Simulator"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "import payment_simulator as ps\n",
+    "from payment_simulator.anomaly import AnomalyGenerator\n",
+    "from payment_simulator.networks import SimplePaymentNetwork\n",
+    "from payment_simulator.utils import random_payment_timing, random_payment_value"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "TOTAL_BANKS = 20\n",
+    "INITIAL_BANKS = 3\n",
+    "INCREMENT_BANKS = 5\n",
+    "ALPHA = 0.00001\n",
+    "AVG_PAYMENTS = 35\n",
+    "ALLOW_SELF_LOOP = False"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sim_periods = list(range(15))\n",
+    "\n",
+    "sim_params = {\n",
+    "    \"open_time\": \"06:30:00\",\n",
+    "    \"close_time\": \"18:30:00\",\n",
+    "    \"value_fn\": random_payment_value,\n",
+    "    \"timing_fn\": random_payment_timing,\n",
+    "}\n",
+    "\n",
+    "payment_network = SimplePaymentNetwork(\n",
+    "    total_banks=TOTAL_BANKS,\n",
+    "    avg_payments=AVG_PAYMENTS,\n",
+    "    alpha=ALPHA,\n",
+    "    allow_self_loop=ALLOW_SELF_LOOP\n",
+    ")\n",
+    "\n",
+    "anomaly_generator = AnomalyGenerator(\n",
+    "    anomaly_start=5,\n",
+    "    anomaly_end=12,\n",
+    "    prob_start=0.8,\n",
+    "    prob_end=1,\n",
+    "    lambda_start=0.5,\n",
+    "    lambda_end=2.5,\n",
+    "    rate=0.5,\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Period</th>\n",
+       "      <th>Time</th>\n",
+       "      <th>Sender</th>\n",
+       "      <th>Receiver</th>\n",
+       "      <th>Count</th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>0</td>\n",
+       "      <td>09:46:59</td>\n",
+       "      <td>0</td>\n",
+       "      <td>7</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.368292</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>0</td>\n",
+       "      <td>17:06:50</td>\n",
+       "      <td>0</td>\n",
+       "      <td>7</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.924266</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>0</td>\n",
+       "      <td>09:05:04</td>\n",
+       "      <td>0</td>\n",
+       "      <td>7</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.421026</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10497</th>\n",
+       "      <td>14</td>\n",
+       "      <td>17:06:38</td>\n",
+       "      <td>18</td>\n",
+       "      <td>10</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1.418408</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10498</th>\n",
+       "      <td>14</td>\n",
+       "      <td>16:26:35</td>\n",
+       "      <td>18</td>\n",
+       "      <td>10</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.127088</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10499</th>\n",
+       "      <td>14</td>\n",
+       "      <td>08:54:12</td>\n",
+       "      <td>19</td>\n",
+       "      <td>17</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1.123134</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       Period      Time  Sender  Receiver  Count     Value\n",
+       "0           0  09:46:59       0         7      1  0.368292\n",
+       "1           0  17:06:50       0         7      1  0.924266\n",
+       "2           0  09:05:04       0         7      1  0.421026\n",
+       "10497      14  17:06:38      18        10      1  1.418408\n",
+       "10498      14  16:26:35      18        10      1  0.127088\n",
+       "10499      14  08:54:12      19        17      1  1.123134"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "normal_transactions = ps.TransactionSim(sim_id=1, network=payment_network, **sim_params)\n",
+    "normal_transactions.run(sim_periods)\n",
+    "\n",
+    "payments1 = normal_transactions.get_payments_df()\n",
+    "\n",
+    "pd.concat([payments1.head(3), payments1.tail(3)])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Period</th>\n",
+       "      <th>Time</th>\n",
+       "      <th>Sender</th>\n",
+       "      <th>Receiver</th>\n",
+       "      <th>Count</th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>0</td>\n",
+       "      <td>14:38:26</td>\n",
+       "      <td>0</td>\n",
+       "      <td>7</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.533394</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>0</td>\n",
+       "      <td>14:37:55</td>\n",
+       "      <td>0</td>\n",
+       "      <td>7</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.721587</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>0</td>\n",
+       "      <td>09:02:15</td>\n",
+       "      <td>0</td>\n",
+       "      <td>7</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1.842448</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10497</th>\n",
+       "      <td>14</td>\n",
+       "      <td>09:59:24</td>\n",
+       "      <td>18</td>\n",
+       "      <td>5</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1.502970</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10498</th>\n",
+       "      <td>14</td>\n",
+       "      <td>17:07:34</td>\n",
+       "      <td>19</td>\n",
+       "      <td>11</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2.391405</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10499</th>\n",
+       "      <td>14</td>\n",
+       "      <td>07:26:25</td>\n",
+       "      <td>19</td>\n",
+       "      <td>6</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2.176636</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       Period      Time  Sender  Receiver  Count     Value\n",
+       "0           0  14:38:26       0         7      1  0.533394\n",
+       "1           0  14:37:55       0         7      1  0.721587\n",
+       "2           0  09:02:15       0         7      1  1.842448\n",
+       "10497      14  09:59:24      18         5      1  1.502970\n",
+       "10498      14  17:07:34      19        11      1  2.391405\n",
+       "10499      14  07:26:25      19         6      1  2.176636"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "anomaly_transactions = ps.AnomalyTransactionSim(sim_id=2, network=payment_network, anomaly=anomaly_generator, **sim_params)\n",
+    "anomaly_transactions.run(sim_periods)\n",
+    "\n",
+    "payments2 = anomaly_transactions.get_payments_df()\n",
+    "\n",
+    "pd.concat([payments2.head(3), payments2.tail(3)])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Total Value of Normal RTGS  : 17023.962 from 10500 transactions\n",
+      "Total Value of Anomaly RTGS : 27071.793 from 10500 transactions\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(f\"Total Value of Normal RTGS  : {payments1['Value'].sum():.3f} from {payments1.shape[0]} transactions\")\n",
+    "print(f\"Total Value of Anomaly RTGS : {payments2['Value'].sum():.3f} from {payments1.shape[0]} transactions\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Success rate: 100.00%\n"
+     ]
+    }
+   ],
+   "source": [
+    "correct = 0\n",
+    "test_len = 5\n",
+    "\n",
+    "for _ in range(test_len):\n",
+    "    normal_transactions.run(sim_periods)\n",
+    "    anomaly_transactions.run(sim_periods)\n",
+    "\n",
+    "    normal_df = normal_transactions.get_payments_df()\n",
+    "    normal_df = normal_df[(normal_df[\"Period\"] <=12) & (normal_df[\"Period\"] >= 5)]\n",
+    "\n",
+    "    anomaly_df = anomaly_transactions.get_payments_df()\n",
+    "    anomaly_df = anomaly_df[(anomaly_df[\"Period\"] <=12) & (normal_df[\"Period\"] >= 5)]\n",
+    "\n",
+    "    x1 = normal_df[\"Value\"].sum()\n",
+    "    x2 = anomaly_df[\"Value\"].sum()\n",
+    "\n",
+    "    if x2 > x1:\n",
+    "        correct += 1\n",
+    "\n",
+    "print(f\"Success rate: {correct / test_len * 100:.2f}%\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "paysim",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

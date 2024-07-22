@@ -1,0 +1,214 @@
+payment_simulator.simulator
+===========================
+
+.. py:module:: payment_simulator.simulator
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   payment_simulator.simulator.AbstractTransactionSim
+   payment_simulator.simulator.TransactionSim
+   payment_simulator.simulator.AnomalyTransactionSim
+
+
+Module Contents
+---------------
+
+.. py:class:: AbstractTransactionSim(network: payment_simulator.networks.AbstractPaymentNetwork, value_fn: Callable, timing_fn: Callable, open_time: str = '08:00:00', close_time: str = '17:00:00')
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Abstract base class for simulating transaction scenarios in a financial network.
+
+   This class is intended to be subclassed to create specific transaction simulation scenarios
+   by providing concrete implementations for transaction value calculations and timing.
+
+   :param network: An instance of a payment network which handles the simulation of payments.
+   :type network: AbstractPaymentNetwork
+   :param value_fn: A function to calculate the value of each transaction.
+   :type value_fn: Callable
+   :param timing_fn: A function to determine the timing of each transaction within the operational hours.
+   :type timing_fn: Callable
+   :param open_time: The opening time of the transaction window each day, formatted as "HH:MM:SS".
+   :type open_time: str, optional
+   :param close_time: The closing time of the transaction window each day, formatted as "HH:MM:SS".
+   :type close_time: str, optional
+
+   .. attribute:: payments
+
+      A list to store all payment transactions. Each transaction is stored as a tuple containing
+      period, timing, sender, receiver, count, and value of the transaction.
+
+      :type: List[tuple]
+
+   .. attribute:: network
+
+      The payment network instance used for simulating transactions.
+
+      :type: AbstractPaymentNetwork
+
+   .. attribute:: value_fn
+
+      Function used to calculate the transaction value.
+
+      :type: Callable
+
+   .. attribute:: timing_fn
+
+      Function used to determine the transaction timing.
+
+      :type: Callable
+
+   .. attribute:: open_time
+
+      Parsed opening time for transactions.
+
+      :type: datetime.time
+
+   .. attribute:: close_time
+
+      Parsed closing time for transactions.
+
+      :type: datetime.time
+
+   .. method:: get_payments_df() -> pd.DataFrame
+
+      Returns a DataFrame containing all simulated transactions with detailed columns.
+
+   .. method:: simulate_day(init_banks: int | None = None)
+
+      Simulates a day's transactions using the network's payment simulation function.
+
+
+
+   .. py:method:: get_payments_df() -> pandas.DataFrame
+
+      Constructs and returns a DataFrame from the accumulated payment transactions.
+
+      :returns: DataFrame containing transaction data with columns for period, time, sender, receiver,
+                count, and value.
+      :rtype: pd.DataFrame
+
+
+
+   .. py:method:: simulate_day(init_banks: int | None = None)
+
+      Simulates transaction activities for a single day, optionally initializing a specific number of banks.
+
+      :param init_banks: Number of banks to initialize at the start of the day's simulation. If None, the default
+                         setup of the network is used.
+      :type init_banks: int, optional
+
+
+
+.. py:class:: TransactionSim(sim_id: Any, **kwargs)
+
+   Bases: :py:obj:`AbstractTransactionSim`
+
+
+   Simulation class for generating transaction patterns in a financial network.
+
+   This class extends `AbstractTransactionSim` and simulates transactions across
+   various periods, without introducing anomalies.
+
+   :param sim_id: An identifier for the simulation, which can be of any type.
+   :type sim_id: Any
+   :param \*\*kwargs: Additional keyword arguments that are passed to the base class `AbstractTransactionSim`.
+   :type \*\*kwargs: dict
+
+   .. attribute:: sim_id
+
+      Stores the identifier for the simulation.
+
+      :type: Any
+
+   .. attribute:: payments
+
+      Accumulates all the payments made during the simulation.
+
+      :type: list
+
+   .. method:: run(sim_periods: list[int]) -> None
+
+      Executes the simulation over specified time periods, generating standard payments.
+
+
+
+   .. py:method:: run(sim_periods: list[int]) -> None
+
+      Run the simulation for a list of time periods, each representing a discrete simulation interval.
+
+      :param sim_periods: List of periods during which the simulation runs. Each period typically represents a day.
+      :type sim_periods: list[int]
+
+      .. rubric:: Notes
+
+      During each period, the simulation:
+      1. Generates a payment network for the day.
+      2. Iterates over all links (i.e., bank pairs) in the network.
+      3. For each link, generates transactions based on the link weight (number of transactions).
+      4. Calculates the timing and value of each transaction without anomalies.
+      5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.
+
+
+
+.. py:class:: AnomalyTransactionSim(sim_id: Any, anomaly: payment_simulator.anomaly.AbstractAnomalyGenerator, **kwargs)
+
+   Bases: :py:obj:`AbstractTransactionSim`
+
+
+   Simulation class for generating anomalous transaction patterns in a financial network.
+
+   :param sim_id: An identifier for the simulation, which can be of any type.
+   :type sim_id: Any
+   :param anomaly: An anomaly generator instance that modifies payment values to simulate anomalies.
+   :type anomaly: AbstractAnomalyGenerator
+   :param \*\*kwargs: Additional keyword arguments that are passed to the base class `AbstractTransactionSim`.
+   :type \*\*kwargs: dict
+
+   .. attribute:: sim_id
+
+      Stores the identifier for the simulation.
+
+      :type: Any
+
+   .. attribute:: anomaly
+
+      Holds the anomaly generator used in the simulation.
+
+      :type: AbstractAnomalyGenerator
+
+   .. attribute:: payments
+
+      Accumulates all the payments made during the simulation, including anomalies.
+
+      :type: list
+
+   .. method:: run(sim_periods: list[int]) -> None
+
+      Executes the simulation over specified time periods, generating payments and incorporating anomalies.
+
+
+
+   .. py:method:: run(sim_periods: list[int]) -> None
+
+      Run the simulation for a list of time periods, each representing a discrete simulation interval.
+
+      :param sim_periods: List of periods during which the simulation runs. Each period should typically represent a day.
+      :type sim_periods: list[int]
+
+      .. rubric:: Notes
+
+      During each period, the simulation:
+      1. Generates a payment network for the day.
+      2. Iterates over all links (i.e., bank pairs) in the network.
+      3. For each link, generates transactions based on the link weight (number of transactions).
+      4. Applies an anomaly to the value of each transaction.
+      5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.
+
+
+

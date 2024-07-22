@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>payment_simulator &mdash; payment_simulator  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="payment_simulator.anomaly" href="anomaly/index.html" />
+    <link rel="prev" title="API Reference" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            payment_simulator
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../example_networks.html">Payment Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../example_anomaly.html">Anomaly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../example_simulator.html">Simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">payment_simulator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="anomaly/index.html">payment_simulator.anomaly</a></li>
+<li class="toctree-l4"><a class="reference internal" href="networks/index.html">payment_simulator.networks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="simulator/index.html">payment_simulator.simulator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils/index.html">payment_simulator.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.anomaly_parameter"><code class="docutils literal notranslate"><span class="pre">anomaly_parameter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.AbstractAnomalyGenerator"><code class="docutils literal notranslate"><span class="pre">AbstractAnomalyGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.AnomalyGenerator"><code class="docutils literal notranslate"><span class="pre">AnomalyGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.AbstractPaymentNetwork"><code class="docutils literal notranslate"><span class="pre">AbstractPaymentNetwork</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.SimplePaymentNetwork"><code class="docutils literal notranslate"><span class="pre">SimplePaymentNetwork</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.GroupedPaymentNetwork"><code class="docutils literal notranslate"><span class="pre">GroupedPaymentNetwork</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">AbstractAnomalyGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">AbstractPaymentNetwork</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.AbstractTransactionSim"><code class="docutils literal notranslate"><span class="pre">AbstractTransactionSim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.TransactionSim"><code class="docutils literal notranslate"><span class="pre">TransactionSim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.AnomalyTransactionSim"><code class="docutils literal notranslate"><span class="pre">AnomalyTransactionSim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">anomaly_parameter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.random_payment_value"><code class="docutils literal notranslate"><span class="pre">random_payment_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.random_payment_timing"><code class="docutils literal notranslate"><span class="pre">random_payment_timing()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.calc_num_payments"><code class="docutils literal notranslate"><span class="pre">calc_num_payments()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payment_simulator.calculate_network_params"><code class="docutils literal notranslate"><span class="pre">calculate_network_params()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">payment_simulator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">payment_simulator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/autoapi/payment_simulator/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-payment_simulator">
+<span id="payment-simulator"></span><h1>payment_simulator<a class="headerlink" href="#module-payment_simulator" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="anomaly/index.html">payment_simulator.anomaly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="networks/index.html">payment_simulator.networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulator/index.html">payment_simulator.simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html">payment_simulator.utils</a></li>
+</ul>
+</div>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="payment_simulator.AbstractAnomalyGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractAnomalyGenerator</span></code></a></p></td>
+<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#payment_simulator.AnomalyGenerator" title="payment_simulator.AnomalyGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnomalyGenerator</span></code></a></p></td>
+<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id2" title="payment_simulator.AbstractPaymentNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractPaymentNetwork</span></code></a></p></td>
+<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#payment_simulator.SimplePaymentNetwork" title="payment_simulator.SimplePaymentNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimplePaymentNetwork</span></code></a></p></td>
+<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#payment_simulator.GroupedPaymentNetwork" title="payment_simulator.GroupedPaymentNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupedPaymentNetwork</span></code></a></p></td>
+<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id0" title="payment_simulator.AbstractAnomalyGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractAnomalyGenerator</span></code></a></p></td>
+<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id2" title="payment_simulator.AbstractPaymentNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractPaymentNetwork</span></code></a></p></td>
+<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#payment_simulator.AbstractTransactionSim" title="payment_simulator.AbstractTransactionSim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractTransactionSim</span></code></a></p></td>
+<td><p>Abstract base class for simulating transaction scenarios in a financial network.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#payment_simulator.TransactionSim" title="payment_simulator.TransactionSim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransactionSim</span></code></a></p></td>
+<td><p>Simulation class for generating transaction patterns in a financial network.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#payment_simulator.AnomalyTransactionSim" title="payment_simulator.AnomalyTransactionSim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnomalyTransactionSim</span></code></a></p></td>
+<td><p>Simulation class for generating anomalous transaction patterns in a financial network.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id12" title="payment_simulator.anomaly_parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">anomaly_parameter</span></code></a>(→ float)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id12" title="payment_simulator.anomaly_parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">anomaly_parameter</span></code></a>(→ float)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#payment_simulator.random_payment_value" title="payment_simulator.random_payment_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_payment_value</span></code></a>(→ float)</p></td>
+<td><p>Computes a random value based on a log-normal distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#payment_simulator.random_payment_timing" title="payment_simulator.random_payment_timing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_payment_timing</span></code></a>(→ datetime.time)</p></td>
+<td><p>Generates a random datetime within the operation period defined by the open and close times.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#payment_simulator.calc_num_payments" title="payment_simulator.calc_num_payments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_num_payments</span></code></a>(→ int)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#payment_simulator.calculate_network_params" title="payment_simulator.calculate_network_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_network_params</span></code></a>(→ dict)</p></td>
+<td><p>Calculates and returns various parameters of the simulation such as connectivity, reciprocity, and degrees.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="package-contents">
+<h2>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="payment_simulator.anomaly_parameter">
+<span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">anomaly_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anomaly_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anomaly_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/utils.html#anomaly_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.anomaly_parameter" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="payment_simulator.AbstractAnomalyGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">AbstractAnomalyGenerator</span></span><a class="reference internal" href="../../_modules/payment_simulator/anomaly.html#AbstractAnomalyGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AbstractAnomalyGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Helper class that provides a standard way to create an ABC using
+inheritance.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.AbstractAnomalyGenerator.__call__">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/anomaly.html#AbstractAnomalyGenerator.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AbstractAnomalyGenerator.__call__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="payment_simulator.AnomalyGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">AnomalyGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">anomaly_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anomaly_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prob_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prob_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/anomaly.html#AnomalyGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AnomalyGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id0" title="payment_simulator.AbstractAnomalyGenerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractAnomalyGenerator</span></code></a></p>
+<p>Helper class that provides a standard way to create an ABC using
+inheritance.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.AnomalyGenerator.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/anomaly.html#AnomalyGenerator.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AnomalyGenerator.__call__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="payment_simulator.AbstractPaymentNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">AbstractPaymentNetwork</span></span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AbstractPaymentNetwork" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Helper class that provides a standard way to create an ABC using
+inheritance.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.AbstractPaymentNetwork.simulate_payments">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simulate_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork.simulate_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AbstractPaymentNetwork.simulate_payments" title="Link to this definition"></a></dt>
+<dd><p>Abstract method to simulate payments.
+This method should be implemented by subclasses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.AbstractPaymentNetwork.extract_link_matrix">
+<span class="sig-name descname"><span class="pre">extract_link_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork.extract_link_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AbstractPaymentNetwork.extract_link_matrix" title="Link to this definition"></a></dt>
+<dd><p>Extracts and returns the adjacency matrix of the network graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prop</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, returns the matrix as proportions of the total transactions. If False, returns raw transaction counts.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy ndarray representing the adjacency matrix of the network graph.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.AbstractPaymentNetwork._create_transaction">
+<span class="sig-name descname"><span class="pre">_create_transaction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._create_transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AbstractPaymentNetwork._create_transaction" title="Link to this definition"></a></dt>
+<dd><p>Creates a transaction between randomly selected banks in the network.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.AbstractPaymentNetwork._random_bank">
+<span class="sig-name descname"><span class="pre">_random_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prob</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._random_bank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AbstractPaymentNetwork._random_bank" title="Link to this definition"></a></dt>
+<dd><p>Selects a bank for initiating a transaction based on a weighted probability distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prob</strong> (<em>np.ndarray</em>) – Array of probabilities for each bank.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The selected bank’s identifier.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.AbstractPaymentNetwork._payment_link">
+<span class="sig-name descname"><span class="pre">_payment_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._payment_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AbstractPaymentNetwork._payment_link" title="Link to this definition"></a></dt>
+<dd><p>Creates or updates a payment link between two banks in the simulation graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sender</strong> (<em>int</em>) – The identifier of the bank initiating the payment.</p></li>
+<li><p><strong>receiver</strong> (<em>int</em>) – The identifier of the bank receiving the payment.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="payment_simulator.SimplePaymentNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">SimplePaymentNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_payments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_self_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#SimplePaymentNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.SimplePaymentNetwork" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id2" title="payment_simulator.AbstractPaymentNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractPaymentNetwork</span></code></a></p>
+<p>Helper class that provides a standard way to create an ABC using
+inheritance.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.SimplePaymentNetwork.simulate_payments">
+<span class="sig-name descname"><span class="pre">simulate_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#SimplePaymentNetwork.simulate_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.SimplePaymentNetwork.simulate_payments" title="Link to this definition"></a></dt>
+<dd><p>Simulates the payment processing between banks for a given period, starting with an initial set of banks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init_banks</strong> (<em>int</em><em>, </em><em>optional</em>) – Initial number of banks to start the simulation with. If None, it defaults to half of the total banks rounded up.</p></li>
+<li><p><strong>increment</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of banks to add in each iteration.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="payment_simulator.GroupedPaymentNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">GroupedPaymentNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_payments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_self_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#GroupedPaymentNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.GroupedPaymentNetwork" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id2" title="payment_simulator.AbstractPaymentNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractPaymentNetwork</span></code></a></p>
+<p>Helper class that provides a standard way to create an ABC using
+inheritance.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.GroupedPaymentNetwork.simulate_payments">
+<span class="sig-name descname"><span class="pre">simulate_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#GroupedPaymentNetwork.simulate_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.GroupedPaymentNetwork.simulate_payments" title="Link to this definition"></a></dt>
+<dd><p>Simulates the payment processing between banks for a given period, starting with an initial set of banks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init_banks</strong> (<em>int</em><em>, </em><em>optional</em>) – Initial number of banks to start the simulation with. If None, it defaults to half of the total banks rounded up.</p></li>
+<li><p><strong>increment</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of banks to add in each iteration.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">AbstractAnomalyGenerator</span></span><a class="reference internal" href="../../_modules/payment_simulator/anomaly.html#AbstractAnomalyGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Helper class that provides a standard way to create an ABC using
+inheritance.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/anomaly.html#AbstractAnomalyGenerator.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="id2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">AbstractPaymentNetwork</span></span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Helper class that provides a standard way to create an ABC using
+inheritance.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simulate_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork.simulate_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Abstract method to simulate payments.
+This method should be implemented by subclasses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">extract_link_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork.extract_link_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd><p>Extracts and returns the adjacency matrix of the network graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prop</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, returns the matrix as proportions of the total transactions. If False, returns raw transaction counts.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy ndarray representing the adjacency matrix of the network graph.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">_create_transaction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._create_transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Creates a transaction between randomly selected banks in the network.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">_random_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prob</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._random_bank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd><p>Selects a bank for initiating a transaction based on a weighted probability distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prob</strong> (<em>np.ndarray</em>) – Array of probabilities for each bank.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The selected bank’s identifier.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">_payment_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._payment_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd><p>Creates or updates a payment link between two banks in the simulation graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sender</strong> (<em>int</em>) – The identifier of the bank initiating the payment.</p></li>
+<li><p><strong>receiver</strong> (<em>int</em>) – The identifier of the bank receiving the payment.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="payment_simulator.AbstractTransactionSim">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">AbstractTransactionSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="networks/index.html#payment_simulator.networks.AbstractPaymentNetwork" title="payment_simulator.networks.AbstractPaymentNetwork"><span class="pre">payment_simulator.networks.AbstractPaymentNetwork</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">open_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'08:00:00'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'17:00:00'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/simulator.html#AbstractTransactionSim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AbstractTransactionSim" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Abstract base class for simulating transaction scenarios in a financial network.</p>
+<p>This class is intended to be subclassed to create specific transaction simulation scenarios
+by providing concrete implementations for transaction value calculations and timing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<a class="reference internal" href="#id2" title="payment_simulator.AbstractPaymentNetwork"><em>AbstractPaymentNetwork</em></a>) – An instance of a payment network which handles the simulation of payments.</p></li>
+<li><p><strong>value_fn</strong> (<em>Callable</em>) – A function to calculate the value of each transaction.</p></li>
+<li><p><strong>timing_fn</strong> (<em>Callable</em>) – A function to determine the timing of each transaction within the operational hours.</p></li>
+<li><p><strong>open_time</strong> (<em>str</em><em>, </em><em>optional</em>) – The opening time of the transaction window each day, formatted as “HH:MM:SS”.</p></li>
+<li><p><strong>close_time</strong> (<em>str</em><em>, </em><em>optional</em>) – The closing time of the transaction window each day, formatted as “HH:MM:SS”.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.AbstractTransactionSim.payments">
+<span class="sig-name descname"><span class="pre">payments</span></span><a class="headerlink" href="#payment_simulator.AbstractTransactionSim.payments" title="Link to this definition"></a></dt>
+<dd><p>A list to store all payment transactions. Each transaction is stored as a tuple containing
+period, timing, sender, receiver, count, and value of the transaction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[tuple]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.AbstractTransactionSim.network">
+<span class="sig-name descname"><span class="pre">network</span></span><a class="headerlink" href="#payment_simulator.AbstractTransactionSim.network" title="Link to this definition"></a></dt>
+<dd><p>The payment network instance used for simulating transactions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#id2" title="payment_simulator.AbstractPaymentNetwork">AbstractPaymentNetwork</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.AbstractTransactionSim.value_fn">
+<span class="sig-name descname"><span class="pre">value_fn</span></span><a class="headerlink" href="#payment_simulator.AbstractTransactionSim.value_fn" title="Link to this definition"></a></dt>
+<dd><p>Function used to calculate the transaction value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.AbstractTransactionSim.timing_fn">
+<span class="sig-name descname"><span class="pre">timing_fn</span></span><a class="headerlink" href="#payment_simulator.AbstractTransactionSim.timing_fn" title="Link to this definition"></a></dt>
+<dd><p>Function used to determine the transaction timing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.AbstractTransactionSim.open_time">
+<span class="sig-name descname"><span class="pre">open_time</span></span><a class="headerlink" href="#payment_simulator.AbstractTransactionSim.open_time" title="Link to this definition"></a></dt>
+<dd><p>Parsed opening time for transactions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.time</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.AbstractTransactionSim.close_time">
+<span class="sig-name descname"><span class="pre">close_time</span></span><a class="headerlink" href="#payment_simulator.AbstractTransactionSim.close_time" title="Link to this definition"></a></dt>
+<dd><p>Parsed closing time for transactions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.time</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.AbstractTransactionSim.get_payments_df">
+<span class="sig-name descname"><span class="pre">get_payments_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pd.DataFrame</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/simulator.html#AbstractTransactionSim.get_payments_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AbstractTransactionSim.get_payments_df" title="Link to this definition"></a></dt>
+<dd><p>Returns a DataFrame containing all simulated transactions with detailed columns.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.AbstractTransactionSim.simulate_day">
+<span class="sig-name descname"><span class="pre">simulate_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/simulator.html#AbstractTransactionSim.simulate_day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AbstractTransactionSim.simulate_day" title="Link to this definition"></a></dt>
+<dd><p>Simulates a day’s transactions using the network’s payment simulation function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">get_payments_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/simulator.html#AbstractTransactionSim.get_payments_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd><p>Constructs and returns a DataFrame from the accumulated payment transactions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame containing transaction data with columns for period, time, sender, receiver,
+count, and value.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">simulate_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/simulator.html#AbstractTransactionSim.simulate_day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd><p>Simulates transaction activities for a single day, optionally initializing a specific number of banks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>init_banks</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of banks to initialize at the start of the day’s simulation. If None, the default
+setup of the network is used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="payment_simulator.TransactionSim">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">TransactionSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/simulator.html#TransactionSim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.TransactionSim" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#payment_simulator.AbstractTransactionSim" title="payment_simulator.AbstractTransactionSim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractTransactionSim</span></code></a></p>
+<p>Simulation class for generating transaction patterns in a financial network.</p>
+<p>This class extends <cite>AbstractTransactionSim</cite> and simulates transactions across
+various periods, without introducing anomalies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sim_id</strong> (<em>Any</em>) – An identifier for the simulation, which can be of any type.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional keyword arguments that are passed to the base class <cite>AbstractTransactionSim</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.TransactionSim.sim_id">
+<span class="sig-name descname"><span class="pre">sim_id</span></span><a class="headerlink" href="#payment_simulator.TransactionSim.sim_id" title="Link to this definition"></a></dt>
+<dd><p>Stores the identifier for the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.TransactionSim.payments">
+<span class="sig-name descname"><span class="pre">payments</span></span><a class="headerlink" href="#payment_simulator.TransactionSim.payments" title="Link to this definition"></a></dt>
+<dd><p>Accumulates all the payments made during the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.TransactionSim.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_periods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/simulator.html#TransactionSim.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.TransactionSim.run" title="Link to this definition"></a></dt>
+<dd><p>Executes the simulation over specified time periods, generating standard payments.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_periods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/simulator.html#TransactionSim.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd><p>Run the simulation for a list of time periods, each representing a discrete simulation interval.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sim_periods</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – List of periods during which the simulation runs. Each period typically represents a day.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>During each period, the simulation:
+1. Generates a payment network for the day.
+2. Iterates over all links (i.e., bank pairs) in the network.
+3. For each link, generates transactions based on the link weight (number of transactions).
+4. Calculates the timing and value of each transaction without anomalies.
+5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="payment_simulator.AnomalyTransactionSim">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">AnomalyTransactionSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anomaly</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="anomaly/index.html#payment_simulator.anomaly.AbstractAnomalyGenerator" title="payment_simulator.anomaly.AbstractAnomalyGenerator"><span class="pre">payment_simulator.anomaly.AbstractAnomalyGenerator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/payment_simulator/simulator.html#AnomalyTransactionSim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AnomalyTransactionSim" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#payment_simulator.AbstractTransactionSim" title="payment_simulator.AbstractTransactionSim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractTransactionSim</span></code></a></p>
+<p>Simulation class for generating anomalous transaction patterns in a financial network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sim_id</strong> (<em>Any</em>) – An identifier for the simulation, which can be of any type.</p></li>
+<li><p><strong>anomaly</strong> (<a class="reference internal" href="#id0" title="payment_simulator.AbstractAnomalyGenerator"><em>AbstractAnomalyGenerator</em></a>) – An anomaly generator instance that modifies payment values to simulate anomalies.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional keyword arguments that are passed to the base class <cite>AbstractTransactionSim</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.AnomalyTransactionSim.sim_id">
+<span class="sig-name descname"><span class="pre">sim_id</span></span><a class="headerlink" href="#payment_simulator.AnomalyTransactionSim.sim_id" title="Link to this definition"></a></dt>
+<dd><p>Stores the identifier for the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.AnomalyTransactionSim.anomaly">
+<span class="sig-name descname"><span class="pre">anomaly</span></span><a class="headerlink" href="#payment_simulator.AnomalyTransactionSim.anomaly" title="Link to this definition"></a></dt>
+<dd><p>Holds the anomaly generator used in the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#id0" title="payment_simulator.AbstractAnomalyGenerator">AbstractAnomalyGenerator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.AnomalyTransactionSim.payments">
+<span class="sig-name descname"><span class="pre">payments</span></span><a class="headerlink" href="#payment_simulator.AnomalyTransactionSim.payments" title="Link to this definition"></a></dt>
+<dd><p>Accumulates all the payments made during the simulation, including anomalies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.AnomalyTransactionSim.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_periods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/simulator.html#AnomalyTransactionSim.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.AnomalyTransactionSim.run" title="Link to this definition"></a></dt>
+<dd><p>Executes the simulation over specified time periods, generating payments and incorporating anomalies.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_periods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/simulator.html#AnomalyTransactionSim.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd><p>Run the simulation for a list of time periods, each representing a discrete simulation interval.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sim_periods</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – List of periods during which the simulation runs. Each period should typically represent a day.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>During each period, the simulation:
+1. Generates a payment network for the day.
+2. Iterates over all links (i.e., bank pairs) in the network.
+3. For each link, generates transactions based on the link weight (number of transactions).
+4. Applies an anomaly to the value of each transaction.
+5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">anomaly_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anomaly_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anomaly_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/utils.html#anomaly_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="payment_simulator.random_payment_value">
+<span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">random_payment_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/utils.html#random_payment_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.random_payment_value" title="Link to this definition"></a></dt>
+<dd><p>Computes a random value based on a log-normal distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> – Parameters for the lognormal distribution, typically mean and standard deviation.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A random value sampled from a log-normal distribution.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="payment_simulator.random_payment_timing">
+<span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">random_payment_timing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">open_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.time</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime.time</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/utils.html#random_payment_timing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.random_payment_timing" title="Link to this definition"></a></dt>
+<dd><p>Generates a random datetime within the operation period defined by the open and close times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>open_time</strong> – Opening time of the operation period.</p></li>
+<li><p><strong>close_time</strong> – Closing time of the operation, must be after the open time.</p></li>
+<li><p><strong>args</strong> – Additional arguments to be passed to the uniform distribution, typically the bounds for the random period.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A random datetime within the specified operation period.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="payment_simulator.calc_num_payments">
+<span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">calc_num_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">networkx.DiGraph</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/utils.html#calc_num_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.calc_num_payments" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="payment_simulator.calculate_network_params">
+<span class="sig-prename descclassname"><span class="pre">payment_simulator.</span></span><span class="sig-name descname"><span class="pre">calculate_network_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">networkx.DiGraph</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/payment_simulator/utils.html#calculate_network_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.calculate_network_params" title="Link to this definition"></a></dt>
+<dd><p>Calculates and returns various parameters of the simulation such as connectivity, reciprocity, and degrees.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary containing calculated simulation parameters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="anomaly/index.html" class="btn btn-neutral float-right" title="payment_simulator.anomaly" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Hanzholah Shobri.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

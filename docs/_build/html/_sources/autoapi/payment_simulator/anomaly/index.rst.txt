@@ -1,0 +1,44 @@
+payment_simulator.anomaly
+=========================
+
+.. py:module:: payment_simulator.anomaly
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   payment_simulator.anomaly.AbstractAnomalyGenerator
+   payment_simulator.anomaly.AnomalyGenerator
+
+
+Module Contents
+---------------
+
+.. py:class:: AbstractAnomalyGenerator
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+
+   .. py:method:: __call__(current_period: int) -> float
+      :abstractmethod:
+
+
+
+.. py:class:: AnomalyGenerator(anomaly_start: int, anomaly_end: int, prob_start: float, prob_end: float, lambda_start: float, lambda_end: float, rate: float)
+
+   Bases: :py:obj:`AbstractAnomalyGenerator`
+
+
+   Helper class that provides a standard way to create an ABC using
+   inheritance.
+
+
+   .. py:method:: __call__(current_period: int) -> float
+
+
