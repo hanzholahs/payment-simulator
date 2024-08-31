@@ -11,68 +11,111 @@ Classes
 
    payment_simulator.networks.AbstractPaymentNetwork
    payment_simulator.networks.SimplePaymentNetwork
-   payment_simulator.networks.GroupedPaymentNetwork
 
 
 Module Contents
 ---------------
 
-.. py:class:: AbstractPaymentNetwork
+.. py:class:: AbstractPaymentNetwork(total_banks: int)
 
    Bases: :py:obj:`abc.ABC`
 
 
-   Helper class that provides a standard way to create an ABC using
-   inheritance.
+   An abstract base class for creating payment networks that simulate transactions
+   between banks within a financial system.
+
+   .. attribute:: total_banks
+
+      The total number of banks included in the network simulation.
+
+      :type: int
+
+   .. attribute:: G
+
+      The graph representing the payment network, where nodes represent banks
+      and edges represent transactions between them.
+
+      :type: networkx.Graph
+
+   .. method:: simulate_payments(init_banks: int | None)
+
+      Simulates transactions across the network. This method must be implemented by subclasses.
+
+   .. method:: extract_link_matrix(prop: bool = True) -> np.ndarray
+
+      Returns the adjacency matrix of the network, either as raw counts or as proportions.
+
+   .. method:: _create_transaction()
+
+      Internal method to create a random transaction between banks based on predefined probabilities.
+
+   .. method:: _random_bank(prob: np.ndarray) -> int
+
+      Selects a bank for initiating a transaction based on a weighted probability distribution.
+
+   .. method:: _payment_link(sender: int, receiver: int)
+
+      Establishes or updates a transaction link between two banks.
+
 
 
    .. py:method:: simulate_payments(init_banks: int | None)
       :abstractmethod:
 
 
-      Abstract method to simulate payments.
-      This method should be implemented by subclasses.
+      Abstract method to simulate payments between banks in the network.
+      Must be implemented by all subclasses to define specific simulation strategies.
+
+      :param init_banks: The number of banks that start transacting at the initiation of the simulation.
+      :type init_banks: int, optional
 
 
 
    .. py:method:: extract_link_matrix(prop: bool = True) -> numpy.ndarray
 
-      Extracts and returns the adjacency matrix of the network graph.
+      Retrieves the adjacency matrix of the network, showing transaction links between banks.
 
-      :param prop: If True, returns the matrix as proportions of the total transactions. If False, returns raw transaction counts.
+      :param prop: Determines whether the matrix should show proportions of total transactions (True)
+                   or raw transaction counts (False). Defaults to True.
       :type prop: bool, optional
 
-      :returns: A numpy ndarray representing the adjacency matrix of the network graph.
+      :returns: The adjacency matrix of the network.
       :rtype: np.ndarray
 
 
 
    .. py:method:: _create_transaction()
 
-      Creates a transaction between randomly selected banks in the network.
+      Internally generates a random transaction by selecting a sender and receiver from the network.
+      The selection is influenced by the preferential attachment vector 'h'.
 
 
 
    .. py:method:: _random_bank(prob) -> int
 
-      Selects a bank for initiating a transaction based on a weighted probability distribution.
+      Randomly selects a bank to initiate a transaction, using a weighted probability distribution.
 
-      :param prob: Array of probabilities for each bank.
+      :param prob: An array of probabilities for each bank, indicating the likelihood of each bank initiating a transaction.
       :type prob: np.ndarray
 
-      :returns: The selected bank's identifier.
+      :returns: The identifier of the bank selected to initiate the transaction.
       :rtype: int
 
 
 
    .. py:method:: _payment_link(sender: int, receiver: int) -> None
 
-      Creates or updates a payment link between two banks in the simulation graph.
+      Creates or updates a payment link between two banks.
 
       :param sender: The identifier of the bank initiating the payment.
       :type sender: int
       :param receiver: The identifier of the bank receiving the payment.
       :type receiver: int
+
+      .. rubric:: Notes
+
+      This method increments the weight of the edge between the sender and receiver to reflect
+      the occurrence of a transaction.
 
 
 
@@ -81,38 +124,62 @@ Module Contents
    Bases: :py:obj:`AbstractPaymentNetwork`
 
 
-   Helper class that provides a standard way to create an ABC using
-   inheritance.
+   An abstract base class for creating payment networks that simulate transactions
+   between banks within a financial system.
+
+   .. attribute:: total_banks
+
+      The total number of banks included in the network simulation.
+
+      :type: int
+
+   .. attribute:: G
+
+      The graph representing the payment network, where nodes represent banks
+      and edges represent transactions between them.
+
+      :type: networkx.Graph
+
+   .. method:: simulate_payments(init_banks: int | None)
+
+      Simulates transactions across the network. This method must be implemented by subclasses.
+
+   .. method:: extract_link_matrix(prop: bool = True) -> np.ndarray
+
+      Returns the adjacency matrix of the network, either as raw counts or as proportions.
+
+   .. method:: _create_transaction()
+
+      Internal method to create a random transaction between banks based on predefined probabilities.
+
+   .. method:: _random_bank(prob: np.ndarray) -> int
+
+      Selects a bank for initiating a transaction based on a weighted probability distribution.
+
+   .. method:: _payment_link(sender: int, receiver: int)
+
+      Establishes or updates a transaction link between two banks.
+
 
 
    .. py:method:: simulate_payments(init_banks: int | None = None, increment: int = 2) -> None
 
-      Simulates the payment processing between banks for a given period, starting with an initial set of banks.
+      Simulates the payment processing between banks, gradually increasing the number of participating banks
+      according to specified parameters. The simulation starts with an initial set of banks and incrementally adds
+      more until all banks are active.
 
-      :param init_banks: Initial number of banks to start the simulation with. If None, it defaults to half of the total banks rounded up.
+      :param init_banks: The initial number of banks to include in the simulation. If not specified, it defaults to half of the total banks, rounded up.
       :type init_banks: int, optional
-      :param increment: The number of banks to add in each iteration.
+      :param increment: The number of additional banks added in each step of the simulation. Must be a positive integer.
       :type increment: int, optional
 
+      :raises AssertionError: If `increment` is not a positive integer.
 
+      .. rubric:: Notes
 
-.. py:class:: GroupedPaymentNetwork(total_banks: int, bank_groups: list[int | float], avg_payments: int, alpha: float = 0, allow_self_loop: bool = False)
-
-   Bases: :py:obj:`AbstractPaymentNetwork`
-
-
-   Helper class that provides a standard way to create an ABC using
-   inheritance.
-
-
-   .. py:method:: simulate_payments(init_banks: int | None = None, increment: int = 2) -> None
-
-      Simulates the payment processing between banks for a given period, starting with an initial set of banks.
-
-      :param init_banks: Initial number of banks to start the simulation with. If None, it defaults to half of the total banks rounded up.
-      :type init_banks: int, optional
-      :param increment: The number of banks to add in each iteration.
-      :type increment: int, optional
+      The simulation dynamically adjusts the number of transactions based on the changing number of banks,
+      maintaining the average payments per bank. This process continues until all specified banks are included
+      in the network or the addition results in no new banks due to constraints.
 
 
 

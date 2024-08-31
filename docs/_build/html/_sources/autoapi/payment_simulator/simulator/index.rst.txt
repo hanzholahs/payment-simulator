@@ -11,7 +11,6 @@ Classes
 
    payment_simulator.simulator.AbstractTransactionSim
    payment_simulator.simulator.TransactionSim
-   payment_simulator.simulator.AnomalyTransactionSim
 
 
 Module Contents
@@ -22,28 +21,27 @@ Module Contents
    Bases: :py:obj:`abc.ABC`
 
 
-   Abstract base class for simulating transaction scenarios in a financial network.
-
-   This class is intended to be subclassed to create specific transaction simulation scenarios
-   by providing concrete implementations for transaction value calculations and timing.
+   An abstract base class designed for simulating transaction scenarios within a financial network.
+   This class is intended to be subclassed to provide specific implementations for simulating
+   transaction values and timings within operational hours.
 
    :param network: An instance of a payment network which handles the simulation of payments.
    :type network: AbstractPaymentNetwork
-   :param value_fn: A function to calculate the value of each transaction.
+   :param value_fn: Function to calculate the value of each transaction.
    :type value_fn: Callable
-   :param timing_fn: A function to determine the timing of each transaction within the operational hours.
+   :param timing_fn: Function to determine the timing of each transaction within the specified operational hours.
    :type timing_fn: Callable
-   :param open_time: The opening time of the transaction window each day, formatted as "HH:MM:SS".
+   :param open_time: The opening time of the transaction window each day, formatted as "HH:MM:SS", default is "08:00:00".
    :type open_time: str, optional
-   :param close_time: The closing time of the transaction window each day, formatted as "HH:MM:SS".
+   :param close_time: The closing time of the transaction window each day, formatted as "HH:MM:SS", default is "17:00:00".
    :type close_time: str, optional
 
    .. attribute:: payments
 
       A list to store all payment transactions. Each transaction is stored as a tuple containing
-      period, timing, sender, receiver, count, and value of the transaction.
+      period, timing, sender, receiver, count, and value.
 
-      :type: List[tuple]
+      :type: list[tuple]
 
    .. attribute:: network
 
@@ -77,138 +75,124 @@ Module Contents
 
    .. method:: get_payments_df() -> pd.DataFrame
 
-      Returns a DataFrame containing all simulated transactions with detailed columns.
+      Returns a DataFrame containing all simulated transactions with details.
+
+   .. method:: get_balances_df() -> pd.DataFrame
+
+      Returns a DataFrame containing the balances of all participants after simulation.
 
    .. method:: simulate_day(init_banks: int | None = None)
 
-      Simulates a day's transactions using the network's payment simulation function.
+      Simulates a day's transactions using the network's payment simulation functionality.
 
 
 
    .. py:method:: get_payments_df() -> pandas.DataFrame
 
-      Constructs and returns a DataFrame from the accumulated payment transactions.
+      Compiles and returns a DataFrame from the accumulated payment transactions.
 
-      :returns: DataFrame containing transaction data with columns for period, time, sender, receiver,
-                count, and value.
+      :returns: A DataFrame detailing all transactions, with columns for the period, time of transaction,
+                sender bank, receiver bank, count of transactions, and the value of each transaction.
       :rtype: pd.DataFrame
+
+      :raises AssertionError: If no transactions have been simulated yet, prompting a reminder to run simulations.
+
+
+
+   .. py:method:: get_balances_df() -> pandas.DataFrame
+
+      Constructs and returns a DataFrame containing the balances of all participants after simulation.
+
+      :returns: A DataFrame detailing the balances of each participant, with columns for the participant identifier
+                and their respective balance.
+      :rtype: pd.DataFrame
+
+      :raises AssertionError: If no simulation has been run yet, indicating that there are no balances to report. This assertion ensures
+          that balance information is only attempted to be retrieved after at least one simulation cycle.
 
 
 
    .. py:method:: simulate_day(init_banks: int | None = None)
 
-      Simulates transaction activities for a single day, optionally initializing a specific number of banks.
+      Simulates transaction activities for a single day, optionally initializing a specific number of banks
+      at the start of the simulation. This method utilizes the network's simulate_payments method to process transactions.
 
-      :param init_banks: Number of banks to initialize at the start of the day's simulation. If None, the default
-                         setup of the network is used.
+      :param init_banks: The number of banks to include at the beginning of the day's simulation. If not specified, the simulation
+                         will proceed with the default setup as defined by the network's initial configuration.
       :type init_banks: int, optional
 
+      .. rubric:: Notes
+
+      This method is designed to be run multiple times if simulating transactions over multiple days. Each call
+      represents a single day of transaction activity, with the state of the network carrying over to the next call.
 
 
-.. py:class:: TransactionSim(sim_id: Any, **kwargs)
+
+.. py:class:: TransactionSim(sim_id: Any = 0, anomaly_gen: Callable = zero_anomaly_gen, *args, **kwargs)
 
    Bases: :py:obj:`AbstractTransactionSim`
 
 
-   Simulation class for generating transaction patterns in a financial network.
+   A simulation class designed for generating and analyzing anomalous transaction patterns within a financial network.
+   This class extends `AbstractTransactionSim` by integrating an anomaly generator to simulate transaction anomalies.
 
-   This class extends `AbstractTransactionSim` and simulates transactions across
-   various periods, without introducing anomalies.
-
-   :param sim_id: An identifier for the simulation, which can be of any type.
+   :param sim_id: A unique identifier for the simulation, which can be of any data type (int, string, etc.).
    :type sim_id: Any
-   :param \*\*kwargs: Additional keyword arguments that are passed to the base class `AbstractTransactionSim`.
+   :param anomaly_gen: An instance of an anomaly generator that applies modifications to transaction values, simulating anomalies.
+   :type anomaly_gen: Callable
+   :param \*\*kwargs: Additional keyword arguments that are passed to the superclass `AbstractTransactionSim`, including network, value_fn, timing_fn, open_time, and close_time.
    :type \*\*kwargs: dict
 
    .. attribute:: sim_id
 
-      Stores the identifier for the simulation.
+      Stores the identifier for this particular simulation instance.
 
       :type: Any
 
-   .. attribute:: payments
+   .. attribute:: anomaly_gen
 
-      Accumulates all the payments made during the simulation.
+      Holds the anomaly generator which is used to introduce anomalies into the transactions during the simulation.
 
-      :type: list
-
-   .. method:: run(sim_periods: list[int]) -> None
-
-      Executes the simulation over specified time periods, generating standard payments.
-
-
-
-   .. py:method:: run(sim_periods: list[int]) -> None
-
-      Run the simulation for a list of time periods, each representing a discrete simulation interval.
-
-      :param sim_periods: List of periods during which the simulation runs. Each period typically represents a day.
-      :type sim_periods: list[int]
-
-      .. rubric:: Notes
-
-      During each period, the simulation:
-      1. Generates a payment network for the day.
-      2. Iterates over all links (i.e., bank pairs) in the network.
-      3. For each link, generates transactions based on the link weight (number of transactions).
-      4. Calculates the timing and value of each transaction without anomalies.
-      5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.
-
-
-
-.. py:class:: AnomalyTransactionSim(sim_id: Any, anomaly: payment_simulator.anomaly.AbstractAnomalyGenerator, **kwargs)
-
-   Bases: :py:obj:`AbstractTransactionSim`
-
-
-   Simulation class for generating anomalous transaction patterns in a financial network.
-
-   :param sim_id: An identifier for the simulation, which can be of any type.
-   :type sim_id: Any
-   :param anomaly: An anomaly generator instance that modifies payment values to simulate anomalies.
-   :type anomaly: AbstractAnomalyGenerator
-   :param \*\*kwargs: Additional keyword arguments that are passed to the base class `AbstractTransactionSim`.
-   :type \*\*kwargs: dict
-
-   .. attribute:: sim_id
-
-      Stores the identifier for the simulation.
-
-      :type: Any
-
-   .. attribute:: anomaly
-
-      Holds the anomaly generator used in the simulation.
-
-      :type: AbstractAnomalyGenerator
+      :type: Callable
 
    .. attribute:: payments
 
-      Accumulates all the payments made during the simulation, including anomalies.
+      Accumulates all transaction data generated during the simulation, capturing details such as period, timing, sender, receiver, count, and anomalous values.
 
-      :type: list
+      :type: list[tuple]
 
-   .. method:: run(sim_periods: list[int]) -> None
+   .. method:: run(sim_periods: Iterable[int]) -> None
 
-      Executes the simulation over specified time periods, generating payments and incorporating anomalies.
+      Executes the simulation over specified time periods, generating payments by integrating anomalies at defined intervals.
 
 
 
-   .. py:method:: run(sim_periods: list[int]) -> None
+   .. py:method:: run(sim_periods: Iterable[int], anomalous_bank: Iterable[int] = []) -> None
 
-      Run the simulation for a list of time periods, each representing a discrete simulation interval.
+      Executes the simulation over a series of defined time periods, generating transactions
+      and optionally incorporating anomalies for specified banks.
 
-      :param sim_periods: List of periods during which the simulation runs. Each period should typically represent a day.
-      :type sim_periods: list[int]
+      :param sim_periods: A list of time periods over which the simulation is run, typically representing each day.
+      :type sim_periods: Iterable[int]
+      :param anomalous_bank: A list of bank indices that should have anomalies applied to their transactions.
+                             If empty, no anomalies are applied. Defaults to an empty list.
+      :type anomalous_bank: Iterable[int], optional
+      :param Process:
+      :param -------:
+      :param 1. For each period in `sim_periods`:
+      :param simulate the day's network dynamics.:
+      :param 2. Iterate over each link (bank pair) in the payment network:
+                                                                           a. For each link, simulate the specified number of transactions (based on link weight).
+                                                                           b. Calculate the timing for each transaction within operational hours.
+                                                                           c. Calculate the transaction value, and apply an anomaly if the sender is listed in `anomalous_bank`.
+                                                                           d. Store each transaction in `all_payments` with its period, timing, sender, receiver, type, and value.
+                                                                           e. Update the sender's and receiver's balance accordingly and track the minimum balance for each bank.
 
       .. rubric:: Notes
 
-      During each period, the simulation:
-      1. Generates a payment network for the day.
-      2. Iterates over all links (i.e., bank pairs) in the network.
-      3. For each link, generates transactions based on the link weight (number of transactions).
-      4. Applies an anomaly to the value of each transaction.
-      5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.
+      - This method updates the `payments` attribute with all transactions from the simulation,
+        where each transaction includes details such as period, timing, sender, receiver, and value.
+      - It also updates the `balances` attribute to reflect the minimum balance each bank reaches during the simulation.
 
 
 

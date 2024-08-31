@@ -14,6 +14,7 @@ Functions
    payment_simulator.utils.random_payment_timing
    payment_simulator.utils.calc_num_payments
    payment_simulator.utils.calculate_network_params
+   payment_simulator.utils.zero_anomaly_gen
 
 
 Module Contents
@@ -47,4 +48,6 @@ Module Contents
 
    :return: Dictionary containing calculated simulation parameters.
 
+
+.. py:function:: zero_anomaly_gen(period) -> int
 

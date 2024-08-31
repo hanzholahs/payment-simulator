@@ -6,7 +6,7 @@
   <title>payment_simulator.simulator &mdash; payment_simulator  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
       <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
 
   
@@ -80,41 +80,40 @@
   <h1>Source code for payment_simulator.simulator</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">.anomaly</span> <span class="kn">import</span> <span class="n">AbstractAnomalyGenerator</span>
 <span class="kn">from</span> <span class="nn">.networks</span> <span class="kn">import</span> <span class="n">AbstractPaymentNetwork</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">zero_anomaly_gen</span>
 
 
 <div class="viewcode-block" id="AbstractTransactionSim">
 <a class="viewcode-back" href="../../autoapi/payment_simulator/simulator/index.html#payment_simulator.AbstractTransactionSim">[docs]</a>
 <span class="k">class</span> <span class="nc">AbstractTransactionSim</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Abstract base class for simulating transaction scenarios in a financial network.</span>
-
-<span class="sd">    This class is intended to be subclassed to create specific transaction simulation scenarios</span>
-<span class="sd">    by providing concrete implementations for transaction value calculations and timing.</span>
+<span class="sd">    An abstract base class designed for simulating transaction scenarios within a financial network.</span>
+<span class="sd">    This class is intended to be subclassed to provide specific implementations for simulating</span>
+<span class="sd">    transaction values and timings within operational hours.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    network : AbstractPaymentNetwork</span>
 <span class="sd">        An instance of a payment network which handles the simulation of payments.</span>
 <span class="sd">    value_fn : Callable</span>
-<span class="sd">        A function to calculate the value of each transaction.</span>
+<span class="sd">        Function to calculate the value of each transaction.</span>
 <span class="sd">    timing_fn : Callable</span>
-<span class="sd">        A function to determine the timing of each transaction within the operational hours.</span>
+<span class="sd">        Function to determine the timing of each transaction within the specified operational hours.</span>
 <span class="sd">    open_time : str, optional</span>
-<span class="sd">        The opening time of the transaction window each day, formatted as &quot;HH:MM:SS&quot;.</span>
+<span class="sd">        The opening time of the transaction window each day, formatted as &quot;HH:MM:SS&quot;, default is &quot;08:00:00&quot;.</span>
 <span class="sd">    close_time : str, optional</span>
-<span class="sd">        The closing time of the transaction window each day, formatted as &quot;HH:MM:SS&quot;.</span>
+<span class="sd">        The closing time of the transaction window each day, formatted as &quot;HH:MM:SS&quot;, default is &quot;17:00:00&quot;.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    payments : List[tuple]</span>
+<span class="sd">    payments : list[tuple]</span>
 <span class="sd">        A list to store all payment transactions. Each transaction is stored as a tuple containing</span>
-<span class="sd">        period, timing, sender, receiver, count, and value of the transaction.</span>
+<span class="sd">        period, timing, sender, receiver, count, and value.</span>
 <span class="sd">    network : AbstractPaymentNetwork</span>
 <span class="sd">        The payment network instance used for simulating transactions.</span>
 <span class="sd">    value_fn : Callable</span>
@@ -129,9 +128,11 @@
 <span class="sd">    Methods</span>
 <span class="sd">    -------</span>
 <span class="sd">    get_payments_df() -&gt; pd.DataFrame</span>
-<span class="sd">        Returns a DataFrame containing all simulated transactions with detailed columns.</span>
+<span class="sd">        Returns a DataFrame containing all simulated transactions with details.</span>
+<span class="sd">    get_balances_df() -&gt; pd.DataFrame</span>
+<span class="sd">        Returns a DataFrame containing the balances of all participants after simulation.</span>
 <span class="sd">    simulate_day(init_banks: int | None = None)</span>
-<span class="sd">        Simulates a day&#39;s transactions using the network&#39;s payment simulation function.</span>
+<span class="sd">        Simulates a day&#39;s transactions using the network&#39;s payment simulation functionality.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -143,10 +144,24 @@
         <span class="n">close_time</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;17:00:00&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize an AbstractTransactionSim with a payment network, transaction value and timing functions,</span>
-<span class="sd">        and operational hours.</span>
+<span class="sd">        Initializes the transaction simulator with required parameters for managing transaction values</span>
+<span class="sd">        and timings within operational hours.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        network : AbstractPaymentNetwork</span>
+<span class="sd">            The network instance over which the transactions will be simulated.</span>
+<span class="sd">        value_fn : Callable</span>
+<span class="sd">            A function that calculates the monetary value of each transaction.</span>
+<span class="sd">        timing_fn : Callable</span>
+<span class="sd">            A function that determines the timing of each transaction within the specified hours.</span>
+<span class="sd">        open_time : str, optional</span>
+<span class="sd">            The starting time of the transaction window each day, formatted as &quot;HH:MM:SS&quot;. Default is &quot;08:00:00&quot;.</span>
+<span class="sd">        close_time : str, optional</span>
+<span class="sd">            The ending time of the transaction window each day, formatted as &quot;HH:MM:SS&quot;. Default is &quot;17:00:00&quot;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">payments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">payments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">balances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">network</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value_fn</span> <span class="o">=</span> <span class="n">value_fn</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timing_fn</span> <span class="o">=</span> <span class="n">timing_fn</span>
@@ -157,29 +172,64 @@
 <a class="viewcode-back" href="../../autoapi/payment_simulator/simulator/index.html#payment_simulator.AbstractTransactionSim.get_payments_df">[docs]</a>
     <span class="k">def</span> <span class="nf">get_payments_df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Constructs and returns a DataFrame from the accumulated payment transactions.</span>
+<span class="sd">        Compiles and returns a DataFrame from the accumulated payment transactions.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        pd.DataFrame</span>
-<span class="sd">            DataFrame containing transaction data with columns for period, time, sender, receiver,</span>
-<span class="sd">            count, and value.</span>
+<span class="sd">            A DataFrame detailing all transactions, with columns for the period, time of transaction,</span>
+<span class="sd">            sender bank, receiver bank, count of transactions, and the value of each transaction.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        AssertionError</span>
+<span class="sd">            If no transactions have been simulated yet, prompting a reminder to run simulations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">payments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;`TransactionSim.run()` must be called first.&quot;</span>
         <span class="n">col_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Period&quot;</span><span class="p">,</span> <span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="s2">&quot;Sender&quot;</span><span class="p">,</span> <span class="s2">&quot;Receiver&quot;</span><span class="p">,</span> <span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payments</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_names</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AbstractTransactionSim.get_balances_df">
+<a class="viewcode-back" href="../../autoapi/payment_simulator/simulator/index.html#payment_simulator.AbstractTransactionSim.get_balances_df">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_balances_df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs and returns a DataFrame containing the balances of all participants after simulation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            A DataFrame detailing the balances of each participant, with columns for the participant identifier</span>
+<span class="sd">            and their respective balance.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        AssertionError</span>
+<span class="sd">            If no simulation has been run yet, indicating that there are no balances to report. This assertion ensures</span>
+<span class="sd">            that balance information is only attempted to be retrieved after at least one simulation cycle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">payments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;`TransactionSim.run()` must be called first.&quot;</span>
+        <span class="n">col_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Participant&quot;</span><span class="p">,</span> <span class="s2">&quot;Balance&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balances</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">col_names</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AbstractTransactionSim.simulate_day">
 <a class="viewcode-back" href="../../autoapi/payment_simulator/simulator/index.html#payment_simulator.AbstractTransactionSim.simulate_day">[docs]</a>
     <span class="k">def</span> <span class="nf">simulate_day</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_banks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Simulates transaction activities for a single day, optionally initializing a specific number of banks.</span>
+<span class="sd">        Simulates transaction activities for a single day, optionally initializing a specific number of banks</span>
+<span class="sd">        at the start of the simulation. This method utilizes the network&#39;s simulate_payments method to process transactions.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        init_banks : int, optional</span>
-<span class="sd">            Number of banks to initialize at the start of the day&#39;s simulation. If None, the default</span>
-<span class="sd">            setup of the network is used.</span>
+<span class="sd">            The number of banks to include at the beginning of the day&#39;s simulation. If not specified, the simulation</span>
+<span class="sd">            will proceed with the default setup as defined by the network&#39;s initial configuration.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method is designed to be run multiple times if simulating transactions over multiple days. Each call</span>
+<span class="sd">        represents a single day of transaction activity, with the state of the network carrying over to the next call.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">simulate_payments</span><span class="p">(</span><span class="n">init_banks</span><span class="p">)</span></div>
 </div>
@@ -190,163 +240,117 @@
 <a class="viewcode-back" href="../../autoapi/payment_simulator/simulator/index.html#payment_simulator.TransactionSim">[docs]</a>
 <span class="k">class</span> <span class="nc">TransactionSim</span><span class="p">(</span><span class="n">AbstractTransactionSim</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Simulation class for generating transaction patterns in a financial network.</span>
-
-<span class="sd">    This class extends `AbstractTransactionSim` and simulates transactions across</span>
-<span class="sd">    various periods, without introducing anomalies.</span>
+<span class="sd">    A simulation class designed for generating and analyzing anomalous transaction patterns within a financial network.</span>
+<span class="sd">    This class extends `AbstractTransactionSim` by integrating an anomaly generator to simulate transaction anomalies.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    sim_id : Any</span>
-<span class="sd">        An identifier for the simulation, which can be of any type.</span>
+<span class="sd">        A unique identifier for the simulation, which can be of any data type (int, string, etc.).</span>
+<span class="sd">    anomaly_gen : Callable</span>
+<span class="sd">        An instance of an anomaly generator that applies modifications to transaction values, simulating anomalies.</span>
 <span class="sd">    **kwargs : dict</span>
-<span class="sd">        Additional keyword arguments that are passed to the base class `AbstractTransactionSim`.</span>
+<span class="sd">        Additional keyword arguments that are passed to the superclass `AbstractTransactionSim`, including network, value_fn, timing_fn, open_time, and close_time.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    sim_id : Any</span>
-<span class="sd">        Stores the identifier for the simulation.</span>
-<span class="sd">    payments : list</span>
-<span class="sd">        Accumulates all the payments made during the simulation.</span>
+<span class="sd">        Stores the identifier for this particular simulation instance.</span>
+<span class="sd">    anomaly_gen : Callable</span>
+<span class="sd">        Holds the anomaly generator which is used to introduce anomalies into the transactions during the simulation.</span>
+<span class="sd">    payments : list[tuple]</span>
+<span class="sd">        Accumulates all transaction data generated during the simulation, capturing details such as period, timing, sender, receiver, count, and anomalous values.</span>
 
 <span class="sd">    Methods</span>
 <span class="sd">    -------</span>
-<span class="sd">    run(sim_periods: list[int]) -&gt; None</span>
-<span class="sd">        Executes the simulation over specified time periods, generating standard payments.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the TransactionSim with a simulation identifier and other parameters.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sim_id</span> <span class="o">=</span> <span class="n">sim_id</span>
-
-<div class="viewcode-block" id="TransactionSim.run">
-<a class="viewcode-back" href="../../autoapi/payment_simulator/simulator/index.html#payment_simulator.TransactionSim.run">[docs]</a>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_periods</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Run the simulation for a list of time periods, each representing a discrete simulation interval.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        sim_periods : list[int]</span>
-<span class="sd">            List of periods during which the simulation runs. Each period typically represents a day.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        During each period, the simulation:</span>
-<span class="sd">        1. Generates a payment network for the day.</span>
-<span class="sd">        2. Iterates over all links (i.e., bank pairs) in the network.</span>
-<span class="sd">        3. For each link, generates transactions based on the link weight (number of transactions).</span>
-<span class="sd">        4. Calculates the timing and value of each transaction without anomalies.</span>
-<span class="sd">        5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">all_payments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="c1"># Process transactions for each simulation period</span>
-        <span class="k">for</span> <span class="n">period</span> <span class="ow">in</span> <span class="n">sim_periods</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">simulate_day</span><span class="p">()</span>  <span class="c1"># Simulate network dynamics for the day</span>
-
-            <span class="c1"># Process each link in the simulated payment network</span>
-            <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
-                <span class="c1"># Simulate transactions based on the weight of each link</span>
-                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]):</span>
-                    <span class="c1"># Calculate transaction timing</span>
-                    <span class="n">timing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timing_fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_time</span><span class="p">)</span>
-
-                    <span class="c1"># Calculate transaction value</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_fn</span><span class="p">()</span>
-                    
-                    <span class="c1"># Store transaction details</span>
-                    <span class="n">all_payments</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">period</span><span class="p">,</span> <span class="n">timing</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">payments</span> <span class="o">=</span> <span class="n">all_payments</span></div>
-</div>
-
-
-
-<div class="viewcode-block" id="AnomalyTransactionSim">
-<a class="viewcode-back" href="../../autoapi/payment_simulator/simulator/index.html#payment_simulator.AnomalyTransactionSim">[docs]</a>
-<span class="k">class</span> <span class="nc">AnomalyTransactionSim</span><span class="p">(</span><span class="n">AbstractTransactionSim</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Simulation class for generating anomalous transaction patterns in a financial network.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    sim_id : Any</span>
-<span class="sd">        An identifier for the simulation, which can be of any type.</span>
-<span class="sd">    anomaly : AbstractAnomalyGenerator</span>
-<span class="sd">        An anomaly generator instance that modifies payment values to simulate anomalies.</span>
-<span class="sd">    **kwargs : dict</span>
-<span class="sd">        Additional keyword arguments that are passed to the base class `AbstractTransactionSim`.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    sim_id : Any</span>
-<span class="sd">        Stores the identifier for the simulation.</span>
-<span class="sd">    anomaly : AbstractAnomalyGenerator</span>
-<span class="sd">        Holds the anomaly generator used in the simulation.</span>
-<span class="sd">    payments : list</span>
-<span class="sd">        Accumulates all the payments made during the simulation, including anomalies.</span>
-
-<span class="sd">    Methods</span>
-<span class="sd">    -------</span>
-<span class="sd">    run(sim_periods: list[int]) -&gt; None</span>
-<span class="sd">        Executes the simulation over specified time periods, generating payments and incorporating anomalies.</span>
+<span class="sd">    run(sim_periods: Iterable[int]) -&gt; None</span>
+<span class="sd">        Executes the simulation over specified time periods, generating payments by integrating anomalies at defined intervals.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">anomaly</span><span class="p">:</span> <span class="n">AbstractAnomalyGenerator</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sim_id</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">anomaly_gen</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">zero_anomaly_gen</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the AnomalyTransactionSim with a simulation identifier, an anomaly generator, and other parameters.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sim_id</span> <span class="o">=</span> <span class="n">sim_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">anomaly</span> <span class="o">=</span> <span class="n">anomaly</span>
-
-<div class="viewcode-block" id="AnomalyTransactionSim.run">
-<a class="viewcode-back" href="../../autoapi/payment_simulator/simulator/index.html#payment_simulator.AnomalyTransactionSim.run">[docs]</a>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_periods</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Run the simulation for a list of time periods, each representing a discrete simulation interval.</span>
+<span class="sd">        Initializes the TransactionSim class with a simulation identifier and an anomaly generator, along with other necessary parameters from the base class.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        sim_periods : list[int]</span>
-<span class="sd">            List of periods during which the simulation runs. Each period should typically represent a day.</span>
+<span class="sd">        sim_id : Any</span>
+<span class="sd">            A unique identifier for the simulation.</span>
+<span class="sd">        anomaly_gen : Callable</span>
+<span class="sd">            A function or generator instance that will be used to inject anomalies into the transaction values during the simulation.</span>
+<span class="sd">        *args : tuple</span>
+<span class="sd">            Positional arguments passed to the superclass.</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Keyword arguments passed to the superclass, which include network configuration and functions for transaction value and timing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_id</span> <span class="o">=</span> <span class="n">sim_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anomaly_gen</span> <span class="o">=</span> <span class="n">anomaly_gen</span>
+
+<div class="viewcode-block" id="TransactionSim.run">
+<a class="viewcode-back" href="../../autoapi/payment_simulator/simulator/index.html#payment_simulator.TransactionSim.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sim_periods</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">anomalous_bank</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Executes the simulation over a series of defined time periods, generating transactions</span>
+<span class="sd">        and optionally incorporating anomalies for specified banks.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sim_periods : Iterable[int]</span>
+<span class="sd">            A list of time periods over which the simulation is run, typically representing each day.</span>
+<span class="sd">        anomalous_bank : Iterable[int], optional</span>
+<span class="sd">            A list of bank indices that should have anomalies applied to their transactions.</span>
+<span class="sd">            If empty, no anomalies are applied. Defaults to an empty list.</span>
+
+<span class="sd">        Process</span>
+<span class="sd">        -------</span>
+<span class="sd">        1. For each period in `sim_periods`, simulate the day&#39;s network dynamics.</span>
+<span class="sd">        2. Iterate over each link (bank pair) in the payment network:</span>
+<span class="sd">           a. For each link, simulate the specified number of transactions (based on link weight).</span>
+<span class="sd">           b. Calculate the timing for each transaction within operational hours.</span>
+<span class="sd">           c. Calculate the transaction value, and apply an anomaly if the sender is listed in `anomalous_bank`.</span>
+<span class="sd">           d. Store each transaction in `all_payments` with its period, timing, sender, receiver, type, and value.</span>
+<span class="sd">           e. Update the sender&#39;s and receiver&#39;s balance accordingly and track the minimum balance for each bank.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        During each period, the simulation:</span>
-<span class="sd">        1. Generates a payment network for the day.</span>
-<span class="sd">        2. Iterates over all links (i.e., bank pairs) in the network.</span>
-<span class="sd">        3. For each link, generates transactions based on the link weight (number of transactions).</span>
-<span class="sd">        4. Applies an anomaly to the value of each transaction.</span>
-<span class="sd">        5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.</span>
+<span class="sd">        - This method updates the `payments` attribute with all transactions from the simulation,</span>
+<span class="sd">          where each transaction includes details such as period, timing, sender, receiver, and value.</span>
+<span class="sd">        - It also updates the `balances` attribute to reflect the minimum balance each bank reaches during the simulation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">all_payments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">balance_now</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">total_banks</span><span class="p">)]</span>
+        <span class="n">balance_min</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">total_banks</span><span class="p">)]</span>
 
         <span class="c1"># Process transactions for each simulation period</span>
         <span class="k">for</span> <span class="n">period</span> <span class="ow">in</span> <span class="n">sim_periods</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">simulate_day</span><span class="p">()</span>  <span class="c1"># Simulate network dynamics for the day</span>
 
             <span class="c1"># Process each link in the simulated payment network</span>
-            <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
+            <span class="k">for</span> <span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">receiver</span><span class="p">),</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="c1"># Simulate transactions based on the weight of each link</span>
                 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]):</span>
                     <span class="c1"># Calculate transaction timing</span>
                     <span class="n">timing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timing_fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_time</span><span class="p">)</span>
 
                     <span class="c1"># Calculate transaction value with anomaly</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_fn</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">anomaly</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_fn</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">sender</span> <span class="ow">in</span> <span class="n">anomalous_bank</span><span class="p">:</span>
+                        <span class="n">value</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">anomaly_gen</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
 
                     <span class="c1"># Store transaction details</span>
-                    <span class="n">all_payments</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">period</span><span class="p">,</span> <span class="n">timing</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+                    <span class="n">all_payments</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">period</span><span class="p">,</span> <span class="n">timing</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">receiver</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
 
+                    <span class="c1"># Track balance and min balance</span>
+                    <span class="n">balance_now</span><span class="p">[</span><span class="n">sender</span><span class="p">]</span> <span class="o">-=</span> <span class="n">value</span>
+                    <span class="n">balance_now</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span> <span class="o">+=</span> <span class="n">value</span>
+                    <span class="k">if</span> <span class="n">balance_now</span><span class="p">[</span><span class="n">sender</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">balance_min</span><span class="p">[</span><span class="n">sender</span><span class="p">]:</span>
+                        <span class="n">balance_min</span><span class="p">[</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">balance_now</span><span class="p">[</span><span class="n">sender</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">balances</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="n">bal</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bal</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">balance_min</span><span class="p">)]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">payments</span> <span class="o">=</span> <span class="n">all_payments</span></div>
 </div>
 

@@ -7,7 +7,7 @@
   <title>Simulator &mdash; payment_simulator  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
 
   
@@ -126,11 +126,11 @@
 
 <span class="n">anomaly_generator</span> <span class="o">=</span> <span class="n">AnomalyGenerator</span><span class="p">(</span>
     <span class="n">anomaly_start</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">anomaly_end</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+    <span class="n">anomaly_end</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span>
     <span class="n">prob_start</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
     <span class="n">prob_end</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">lambda_start</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-    <span class="n">lambda_end</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+    <span class="n">lambda_start</span><span class="o">=</span><span class="mf">5.5</span><span class="p">,</span>
+    <span class="n">lambda_end</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span>
     <span class="n">rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -179,56 +179,56 @@
     <tr>
       <th>0</th>
       <td>0</td>
-      <td>09:57:14</td>
+      <td>17:54:40</td>
       <td>0</td>
-      <td>5</td>
+      <td>8</td>
       <td>1</td>
-      <td>0.681788</td>
+      <td>1.406291</td>
     </tr>
     <tr>
       <th>1</th>
       <td>0</td>
-      <td>08:18:40</td>
+      <td>15:49:51</td>
       <td>0</td>
-      <td>5</td>
+      <td>8</td>
       <td>1</td>
-      <td>2.203179</td>
+      <td>0.360033</td>
     </tr>
     <tr>
       <th>2</th>
       <td>0</td>
-      <td>08:16:58</td>
+      <td>14:47:44</td>
       <td>0</td>
-      <td>5</td>
+      <td>8</td>
       <td>1</td>
-      <td>0.139019</td>
+      <td>1.753326</td>
     </tr>
     <tr>
       <th>10497</th>
       <td>14</td>
-      <td>10:45:12</td>
+      <td>07:43:37</td>
       <td>18</td>
-      <td>3</td>
+      <td>2</td>
       <td>1</td>
-      <td>4.353783</td>
+      <td>0.186491</td>
     </tr>
     <tr>
       <th>10498</th>
       <td>14</td>
-      <td>17:12:32</td>
-      <td>18</td>
-      <td>6</td>
+      <td>09:48:00</td>
+      <td>19</td>
+      <td>9</td>
       <td>1</td>
-      <td>0.088409</td>
+      <td>1.396396</td>
     </tr>
     <tr>
       <th>10499</th>
       <td>14</td>
-      <td>15:46:58</td>
-      <td>18</td>
-      <td>8</td>
+      <td>08:12:19</td>
+      <td>19</td>
+      <td>14</td>
       <td>1</td>
-      <td>0.169963</td>
+      <td>1.864318</td>
     </tr>
   </tbody>
 </table>
@@ -236,8 +236,8 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">anomaly_transactions</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">AnomalyTransactionSim</span><span class="p">(</span><span class="n">sim_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">payment_network</span><span class="p">,</span> <span class="n">anomaly</span><span class="o">=</span><span class="n">anomaly_generator</span><span class="p">,</span> <span class="o">**</span><span class="n">sim_params</span><span class="p">)</span>
-<span class="n">anomaly_transactions</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">sim_periods</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">anomaly_transactions</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">TransactionSim</span><span class="p">(</span><span class="n">sim_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">payment_network</span><span class="p">,</span> <span class="n">anomaly_gen</span><span class="o">=</span><span class="n">anomaly_generator</span><span class="p">,</span> <span class="o">**</span><span class="n">sim_params</span><span class="p">)</span>
+<span class="n">anomaly_transactions</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">sim_periods</span><span class="p">,</span> <span class="n">anomalous_bank</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
 
 <span class="n">payments2</span> <span class="o">=</span> <span class="n">anomaly_transactions</span><span class="o">.</span><span class="n">get_payments_df</span><span class="p">()</span>
 
@@ -276,56 +276,56 @@
     <tr>
       <th>0</th>
       <td>0</td>
-      <td>10:15:20</td>
+      <td>13:39:52</td>
       <td>0</td>
-      <td>9</td>
+      <td>6</td>
       <td>1</td>
-      <td>0.379964</td>
+      <td>0.351316</td>
     </tr>
     <tr>
       <th>1</th>
       <td>0</td>
-      <td>06:55:46</td>
+      <td>12:35:48</td>
       <td>0</td>
-      <td>9</td>
+      <td>6</td>
       <td>1</td>
-      <td>1.385770</td>
+      <td>7.133166</td>
     </tr>
     <tr>
       <th>2</th>
       <td>0</td>
-      <td>15:16:33</td>
+      <td>17:28:44</td>
       <td>0</td>
-      <td>9</td>
+      <td>6</td>
       <td>1</td>
-      <td>1.485390</td>
+      <td>0.459810</td>
     </tr>
     <tr>
       <th>10497</th>
       <td>14</td>
-      <td>11:34:29</td>
+      <td>09:44:12</td>
       <td>18</td>
-      <td>14</td>
+      <td>17</td>
       <td>1</td>
-      <td>0.943585</td>
+      <td>3.222481</td>
     </tr>
     <tr>
       <th>10498</th>
       <td>14</td>
-      <td>11:10:36</td>
-      <td>19</td>
-      <td>14</td>
+      <td>17:40:34</td>
+      <td>18</td>
+      <td>12</td>
       <td>1</td>
-      <td>1.305875</td>
+      <td>2.550830</td>
     </tr>
     <tr>
       <th>10499</th>
       <td>14</td>
-      <td>10:09:05</td>
+      <td>11:43:35</td>
       <td>19</td>
-      <td>3</td>
+      <td>11</td>
       <td>1</td>
-      <td>1.883888</td>
+      <td>0.292492</td>
     </tr>
   </tbody>
 </table>
@@ -339,39 +339,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Total Value of Normal RTGS  : 17277.613 from 10500 transactions
-Total Value of Anomaly RTGS : 26468.346 from 10500 transactions
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">test_len</span> <span class="o">=</span> <span class="mi">5</span>
-
-<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">test_len</span><span class="p">):</span>
-    <span class="n">normal_transactions</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">sim_periods</span><span class="p">)</span>
-    <span class="n">anomaly_transactions</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">sim_periods</span><span class="p">)</span>
-
-    <span class="n">normal_df</span> <span class="o">=</span> <span class="n">normal_transactions</span><span class="o">.</span><span class="n">get_payments_df</span><span class="p">()</span>
-    <span class="n">normal_df</span> <span class="o">=</span> <span class="n">normal_df</span><span class="p">[(</span><span class="n">normal_df</span><span class="p">[</span><span class="s2">&quot;Period&quot;</span><span class="p">]</span> <span class="o">&lt;=</span><span class="mi">12</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">normal_df</span><span class="p">[</span><span class="s2">&quot;Period&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">)]</span>
-
-    <span class="n">anomaly_df</span> <span class="o">=</span> <span class="n">anomaly_transactions</span><span class="o">.</span><span class="n">get_payments_df</span><span class="p">()</span>
-    <span class="n">anomaly_df</span> <span class="o">=</span> <span class="n">anomaly_df</span><span class="p">[(</span><span class="n">anomaly_df</span><span class="p">[</span><span class="s2">&quot;Period&quot;</span><span class="p">]</span> <span class="o">&lt;=</span><span class="mi">12</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">normal_df</span><span class="p">[</span><span class="s2">&quot;Period&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">)]</span>
-
-    <span class="n">x1</span> <span class="o">=</span> <span class="n">normal_df</span><span class="p">[</span><span class="s2">&quot;Value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">x2</span> <span class="o">=</span> <span class="n">anomaly_df</span><span class="p">[</span><span class="s2">&quot;Value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-
-    <span class="k">if</span> <span class="n">x2</span> <span class="o">&gt;</span> <span class="n">x1</span><span class="p">:</span>
-        <span class="n">correct</span> <span class="o">+=</span> <span class="mi">1</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Success rate: </span><span class="si">{</span><span class="n">correct</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">test_len</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Success rate: 100.00%
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Total Value of Normal RTGS  : 17333.730 from 10500 transactions
+Total Value of Anomaly RTGS : 32159.608 from 10500 transactions
 </pre></div>
 </div>
 </div>

@@ -7,7 +7,7 @@
   <title>Payment Network &mdash; payment_simulator  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
 
   
@@ -53,7 +53,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#checking-the-results">Checking the Results</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#grouped-payment-network">Grouped Payment Network</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="example_anomaly.html">Anomaly</a></li>
@@ -97,7 +96,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">payment_simulator</span> <span class="kn">import</span> <span class="n">GroupedPaymentNetwork</span><span class="p">,</span> <span class="n">SimplePaymentNetwork</span>
+<span class="kn">from</span> <span class="nn">payment_simulator</span> <span class="kn">import</span> <span class="n">SimplePaymentNetwork</span>
 <span class="kn">from</span> <span class="nn">payment_simulator.utils</span> <span class="kn">import</span> <span class="n">calculate_network_params</span>
 
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
@@ -219,122 +218,6 @@ dtype: float64
 </div>
 </div>
 </section>
-</section>
-<section id="grouped-payment-network">
-<h2>Grouped Payment Network<a class="headerlink" href="#grouped-payment-network" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">GroupedPaymentNetwork</span></code> leverages a given list of transaction proportions. This proportion represent the size of the group within the network from the biggest to the smallest. It works similarly when deciding the sender and receiver, which is by selecting randomly from pool of nodes with their preferential attachement score. The different lies in how the nodes and edges are added to the network.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g_total_banks</span> <span class="o">=</span> <span class="mi">43</span>
-<span class="n">g_avg_payments</span> <span class="o">=</span> <span class="mi">35</span>
-<span class="n">g_alpha</span> <span class="o">=</span> <span class="mf">1e-5</span>
-<span class="n">g_bank_groups</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">]</span>
-
-<span class="n">g_network</span> <span class="o">=</span> <span class="n">GroupedPaymentNetwork</span><span class="p">(</span>
-    <span class="n">total_banks</span><span class="o">=</span><span class="n">g_total_banks</span><span class="p">,</span>
-    <span class="n">bank_groups</span><span class="o">=</span><span class="n">g_bank_groups</span><span class="p">,</span>
-    <span class="n">avg_payments</span><span class="o">=</span><span class="n">g_avg_payments</span><span class="p">,</span>
-    <span class="n">alpha</span><span class="o">=</span><span class="n">g_alpha</span><span class="p">,</span>
-    <span class="n">allow_self_loop</span><span class="o">=</span><span class="n">ALLOW_SELF_LOOP</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">g_network</span><span class="o">.</span><span class="n">simulate_payments</span><span class="p">(</span><span class="n">increment</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">init_banks</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>Similar to the previous class, we can observe the preferential attachement as well as the link matrix.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Preferential Attachement of Banks:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">h</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Network links:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(</span><span class="n">prop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="mi">4</span><span class="p">))</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Network links:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(),</span> <span class="mi">4</span><span class="p">))</span>
-
-<span class="k">assert</span> <span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="n">g_total_banks</span> <span class="o">*</span> <span class="n">g_avg_payments</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Preferential Attachement of Banks:
-[1.00161 1.00146 1.00168 1.00177 1.00162 1.0016  1.00178 1.00158 1.00188
- 1.00196 1.00092 1.00089 1.00076 1.00073 1.00061 1.00074 1.00076 1.00065
- 1.00073 1.00055 1.00056 1.0004  1.00051 1.00064 1.00031 1.00039 1.00027
- 1.00036 1.00031 1.00029 1.00024 1.00026 1.00024 1.00008 1.00028 1.00016
- 1.00014 1.00009 1.00008 1.00009 1.00008 1.00001 1.00003]
-
-Network links:
-[[ 0  5 13 ...  0  1  0]
- [ 4  0  4 ...  1  0  0]
- [ 9  5  0 ...  0  0  0]
- ...
- [ 0  0  0 ...  0  0  0]
- [ 0  0  0 ...  0  0  0]
- [ 1  1  0 ...  0  0  0]]
-
-Network links:
-[[0.     0.0033 0.0086 ... 0.     0.0007 0.    ]
- [0.0027 0.     0.0027 ... 0.0007 0.     0.    ]
- [0.006  0.0033 0.     ... 0.     0.     0.    ]
- ...
- [0.     0.     0.     ... 0.     0.     0.    ]
- [0.     0.     0.     ... 0.     0.     0.    ]
- [0.0007 0.0007 0.     ... 0.     0.     0.    ]]
-</pre></div>
-</div>
-</div>
-</div>
-<p>We could also observe the similar pattern on the number of links for all nodes. Most nodes only have less than two connection to other nodes.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(</span><span class="n">prop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Distribution of the number of links between nodes&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="_images/0736ebcdeb53654964b06da915e65eed444af404b313ee1a09d82e1e5f48d6fb.png" src="_images/0736ebcdeb53654964b06da915e65eed444af404b313ee1a09d82e1e5f48d6fb.png" />
-</div>
-</div>
-<p>Here, the heatmap of links between two nodes for the grouped network.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">extract_link_matrix</span><span class="p">(</span><span class="kc">False</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Heatmap of transaction links&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="_images/7d4d6c8d23ff8b477480cc0e2f9528c532798978bbabe95b8db45ce95f62f53a.png" src="_images/7d4d6c8d23ff8b477480cc0e2f9528c532798978bbabe95b8db45ce95f62f53a.png" />
-</div>
-</div>
-<p>We can also calculate some network metrics.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">calculate_network_params</span><span class="p">(</span><span class="n">g_network</span><span class="o">.</span><span class="n">G</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Number of nodes        43.000000
-Number of links       680.000000
-Connectivity            0.376523
-Reciprocity             0.600000
-Average Degree (k)     31.627907
-Max (k-in)             27.000000
-Max (k-out)            27.000000
-dtype: float64
-</pre></div>
-</div>
-</div>
-</div>
 </section>
 </section>
 

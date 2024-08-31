@@ -104,13 +104,10 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#payment_simulator.networks.AbstractPaymentNetwork" title="payment_simulator.networks.AbstractPaymentNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractPaymentNetwork</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>An abstract base class for creating payment networks that simulate transactions</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#payment_simulator.networks.SimplePaymentNetwork" title="payment_simulator.networks.SimplePaymentNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimplePaymentNetwork</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#payment_simulator.networks.GroupedPaymentNetwork" title="payment_simulator.networks.GroupedPaymentNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupedPaymentNetwork</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>An abstract base class for creating payment networks that simulate transactions</p></td>
 </tr>
 </tbody>
 </table>
@@ -119,27 +116,86 @@
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="payment_simulator.networks.AbstractPaymentNetwork">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.networks.</span></span><span class="sig-name descname"><span class="pre">AbstractPaymentNetwork</span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.networks.</span></span><span class="sig-name descname"><span class="pre">AbstractPaymentNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>An abstract base class for creating payment networks that simulate transactions
+between banks within a financial system.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.networks.AbstractPaymentNetwork.total_banks">
+<span class="sig-name descname"><span class="pre">total_banks</span></span><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork.total_banks" title="Link to this definition"></a></dt>
+<dd><p>The total number of banks included in the network simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.networks.AbstractPaymentNetwork.G">
+<span class="sig-name descname"><span class="pre">G</span></span><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork.G" title="Link to this definition"></a></dt>
+<dd><p>The graph representing the payment network, where nodes represent banks
+and edges represent transactions between them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>networkx.Graph</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="payment_simulator.networks.AbstractPaymentNetwork.simulate_payments">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simulate_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork.simulate_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork.simulate_payments" title="Link to this definition"></a></dt>
-<dd><p>Abstract method to simulate payments.
-This method should be implemented by subclasses.</p>
+<span class="sig-name descname"><span class="pre">simulate_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork.simulate_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork.simulate_payments" title="Link to this definition"></a></dt>
+<dd><p>Simulates transactions across the network. This method must be implemented by subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="payment_simulator.networks.AbstractPaymentNetwork.extract_link_matrix">
-<span class="sig-name descname"><span class="pre">extract_link_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork.extract_link_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork.extract_link_matrix" title="Link to this definition"></a></dt>
-<dd><p>Extracts and returns the adjacency matrix of the network graph.</p>
+<span class="sig-name descname"><span class="pre">extract_link_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork.extract_link_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork.extract_link_matrix" title="Link to this definition"></a></dt>
+<dd><p>Returns the adjacency matrix of the network, either as raw counts or as proportions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.networks.AbstractPaymentNetwork._create_transaction">
+<span class="sig-name descname"><span class="pre">_create_transaction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._create_transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork._create_transaction" title="Link to this definition"></a></dt>
+<dd><p>Internal method to create a random transaction between banks based on predefined probabilities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.networks.AbstractPaymentNetwork._random_bank">
+<span class="sig-name descname"><span class="pre">_random_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">np.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._random_bank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork._random_bank" title="Link to this definition"></a></dt>
+<dd><p>Selects a bank for initiating a transaction based on a weighted probability distribution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.networks.AbstractPaymentNetwork._payment_link">
+<span class="sig-name descname"><span class="pre">_payment_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._payment_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork._payment_link" title="Link to this definition"></a></dt>
+<dd><p>Establishes or updates a transaction link between two banks.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simulate_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork.simulate_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Abstract method to simulate payments between banks in the network.
+Must be implemented by all subclasses to define specific simulation strategies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>prop</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, returns the matrix as proportions of the total transactions. If False, returns raw transaction counts.</p>
+<dd class="field-odd"><p><strong>init_banks</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of banks that start transacting at the initiation of the simulation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">extract_link_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork.extract_link_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the adjacency matrix of the network, showing transaction links between banks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prop</strong> (<em>bool</em><em>, </em><em>optional</em>) – Determines whether the matrix should show proportions of total transactions (True)
+or raw transaction counts (False). Defaults to True.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A numpy ndarray representing the adjacency matrix of the network graph.</p>
+<dd class="field-even"><p>The adjacency matrix of the network.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -148,21 +204,22 @@ This method should be implemented by subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="payment_simulator.networks.AbstractPaymentNetwork._create_transaction">
-<span class="sig-name descname"><span class="pre">_create_transaction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._create_transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork._create_transaction" title="Link to this definition"></a></dt>
-<dd><p>Creates a transaction between randomly selected banks in the network.</p>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">_create_transaction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._create_transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Internally generates a random transaction by selecting a sender and receiver from the network.
+The selection is influenced by the preferential attachment vector ‘h’.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="payment_simulator.networks.AbstractPaymentNetwork._random_bank">
-<span class="sig-name descname"><span class="pre">_random_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prob</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._random_bank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork._random_bank" title="Link to this definition"></a></dt>
-<dd><p>Selects a bank for initiating a transaction based on a weighted probability distribution.</p>
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">_random_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prob</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._random_bank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Randomly selects a bank to initiate a transaction, using a weighted probability distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>prob</strong> (<em>np.ndarray</em>) – Array of probabilities for each bank.</p>
+<dd class="field-odd"><p><strong>prob</strong> (<em>np.ndarray</em>) – An array of probabilities for each bank, indicating the likelihood of each bank initiating a transaction.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The selected bank’s identifier.</p>
+<dd class="field-even"><p>The identifier of the bank selected to initiate the transaction.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
@@ -171,9 +228,9 @@ This method should be implemented by subclasses.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="payment_simulator.networks.AbstractPaymentNetwork._payment_link">
-<span class="sig-name descname"><span class="pre">_payment_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._payment_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.AbstractPaymentNetwork._payment_link" title="Link to this definition"></a></dt>
-<dd><p>Creates or updates a payment link between two banks in the simulation graph.</p>
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">_payment_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#AbstractPaymentNetwork._payment_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd><p>Creates or updates a payment link between two banks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -182,6 +239,9 @@ This method should be implemented by subclasses.</p>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This method increments the weight of the edge between the sender and receiver to reflect
+the occurrence of a transaction.</p>
 </dd></dl>
 
 </dd></dl>
@@ -190,42 +250,82 @@ This method should be implemented by subclasses.</p>
 <dt class="sig sig-object py" id="payment_simulator.networks.SimplePaymentNetwork">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.networks.</span></span><span class="sig-name descname"><span class="pre">SimplePaymentNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_payments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_self_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#SimplePaymentNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.SimplePaymentNetwork" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#payment_simulator.networks.AbstractPaymentNetwork" title="payment_simulator.networks.AbstractPaymentNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractPaymentNetwork</span></code></a></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>An abstract base class for creating payment networks that simulate transactions
+between banks within a financial system.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.networks.SimplePaymentNetwork.total_banks">
+<span class="sig-name descname"><span class="pre">total_banks</span></span><a class="headerlink" href="#payment_simulator.networks.SimplePaymentNetwork.total_banks" title="Link to this definition"></a></dt>
+<dd><p>The total number of banks included in the network simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="payment_simulator.networks.SimplePaymentNetwork.G">
+<span class="sig-name descname"><span class="pre">G</span></span><a class="headerlink" href="#payment_simulator.networks.SimplePaymentNetwork.G" title="Link to this definition"></a></dt>
+<dd><p>The graph representing the payment network, where nodes represent banks
+and edges represent transactions between them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>networkx.Graph</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="payment_simulator.networks.SimplePaymentNetwork.simulate_payments">
-<span class="sig-name descname"><span class="pre">simulate_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#SimplePaymentNetwork.simulate_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.SimplePaymentNetwork.simulate_payments" title="Link to this definition"></a></dt>
-<dd><p>Simulates the payment processing between banks for a given period, starting with an initial set of banks.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>init_banks</strong> (<em>int</em><em>, </em><em>optional</em>) – Initial number of banks to start the simulation with. If None, it defaults to half of the total banks rounded up.</p></li>
-<li><p><strong>increment</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of banks to add in each iteration.</p></li>
-</ul>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">simulate_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#SimplePaymentNetwork.simulate_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.SimplePaymentNetwork.simulate_payments" title="Link to this definition"></a></dt>
+<dd><p>Simulates transactions across the network. This method must be implemented by subclasses.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="payment_simulator.networks.GroupedPaymentNetwork">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">payment_simulator.networks.</span></span><span class="sig-name descname"><span class="pre">GroupedPaymentNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bank_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_payments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_self_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#GroupedPaymentNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.GroupedPaymentNetwork" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#payment_simulator.networks.AbstractPaymentNetwork" title="payment_simulator.networks.AbstractPaymentNetwork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractPaymentNetwork</span></code></a></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="payment_simulator.networks.GroupedPaymentNetwork.simulate_payments">
-<span class="sig-name descname"><span class="pre">simulate_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#GroupedPaymentNetwork.simulate_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#payment_simulator.networks.GroupedPaymentNetwork.simulate_payments" title="Link to this definition"></a></dt>
-<dd><p>Simulates the payment processing between banks for a given period, starting with an initial set of banks.</p>
+<dt class="sig sig-object py" id="payment_simulator.networks.SimplePaymentNetwork.extract_link_matrix">
+<span class="sig-name descname"><span class="pre">extract_link_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.ndarray</span></span></span><a class="headerlink" href="#payment_simulator.networks.SimplePaymentNetwork.extract_link_matrix" title="Link to this definition"></a></dt>
+<dd><p>Returns the adjacency matrix of the network, either as raw counts or as proportions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.networks.SimplePaymentNetwork._create_transaction">
+<span class="sig-name descname"><span class="pre">_create_transaction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#payment_simulator.networks.SimplePaymentNetwork._create_transaction" title="Link to this definition"></a></dt>
+<dd><p>Internal method to create a random transaction between banks based on predefined probabilities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.networks.SimplePaymentNetwork._random_bank">
+<span class="sig-name descname"><span class="pre">_random_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">np.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#payment_simulator.networks.SimplePaymentNetwork._random_bank" title="Link to this definition"></a></dt>
+<dd><p>Selects a bank for initiating a transaction based on a weighted probability distribution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="payment_simulator.networks.SimplePaymentNetwork._payment_link">
+<span class="sig-name descname"><span class="pre">_payment_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#payment_simulator.networks.SimplePaymentNetwork._payment_link" title="Link to this definition"></a></dt>
+<dd><p>Establishes or updates a transaction link between two banks.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">simulate_payments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_banks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/payment_simulator/networks.html#SimplePaymentNetwork.simulate_payments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Simulates the payment processing between banks, gradually increasing the number of participating banks
+according to specified parameters. The simulation starts with an initial set of banks and incrementally adds
+more until all banks are active.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>init_banks</strong> (<em>int</em><em>, </em><em>optional</em>) – Initial number of banks to start the simulation with. If None, it defaults to half of the total banks rounded up.</p></li>
-<li><p><strong>increment</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of banks to add in each iteration.</p></li>
+<li><p><strong>init_banks</strong> (<em>int</em><em>, </em><em>optional</em>) – The initial number of banks to include in the simulation. If not specified, it defaults to half of the total banks, rounded up.</p></li>
+<li><p><strong>increment</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of additional banks added in each step of the simulation. Must be a positive integer.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If <cite>increment</cite> is not a positive integer.</p>
+</dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The simulation dynamically adjusts the number of transactions based on the changing number of banks,
+maintaining the average payments per bank. This process continues until all specified banks are included
+in the network or the addition results in no new banks due to constraints.</p>
 </dd></dl>
 
 </dd></dl>
