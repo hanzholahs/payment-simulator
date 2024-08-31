@@ -50,10 +50,10 @@ anomaly_generator = AnomalyGenerator(
     rate=0.5,
 )
 
-anomaly_transactions = AnomalyTransactionSim(
+anomaly_transactions = TransactionSim(
     sim_id=2,
     network=payment_network,
-    anomaly=anomaly_generator,
+    anomaly_gen=anomaly_generator,
     **sim_params
 )
 
