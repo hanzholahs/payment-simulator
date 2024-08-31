@@ -6,11 +6,12 @@ from numpy.random import randint
 
 
 class AbstractPaymentNetwork(ABC):
-    def __init__(self) -> None:
+    def __init__(self, total_banks: int) -> None:
         """
         Initializes the abstract payment network with a graph attribute.
         """
         self.G: nx.Graph = None
+        self.total_banks = total_banks
 
     @abstractmethod
     def simulate_payments(self, init_banks: int | None):
@@ -114,11 +115,10 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
         allow_self_loop : bool, optional
             Boolean indicating whether transactions within the same bank (self-loops) are allowed.
         """
-        super().__init__()
+        super().__init__(total_banks=total_banks)
 
         # set simulation parameters
         self.alpha = alpha
-        self.total_banks = total_banks
         self.avg_payments = avg_payments
         self.allow_self_loop = allow_self_loop
 
@@ -135,7 +135,9 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
         increment : int, optional
             The number of banks to add in each iteration.
         """
-        if init_banks is None:
+        assert increment > 0, "`increment` must be positive integer."
+
+        if init_banks is None or init_banks < 2:
             init_banks = int(1 + np.ceil(self.total_banks / 2))
 
         # Initialize the graph with some nodes
