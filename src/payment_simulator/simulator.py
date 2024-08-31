@@ -1,11 +1,11 @@
 import datetime
 from abc import ABC
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 
 import pandas as pd
 
-from .anomaly import AbstractAnomalyGenerator
 from .networks import AbstractPaymentNetwork
+from .utils import zero_anomaly_gen
 
 
 class AbstractTransactionSim(ABC):
@@ -64,7 +64,8 @@ class AbstractTransactionSim(ABC):
         Initialize an AbstractTransactionSim with a payment network, transaction value and timing functions,
         and operational hours.
         """
-        self.payments: list[tuple] = []
+        self.payments: list[tuple] | None = None
+        self.balances: list[tuple] | None = None
         self.network = network
         self.value_fn = value_fn
         self.timing_fn = timing_fn
@@ -81,9 +82,14 @@ class AbstractTransactionSim(ABC):
             DataFrame containing transaction data with columns for period, time, sender, receiver,
             count, and value.
         """
+        assert self.payments is not None, "`TransactionSim.run()` must be called first."
         col_names = ["Period", "Time", "Sender", "Receiver", "Count", "Value"]
         return pd.DataFrame(self.payments, columns=col_names)
 
+    def get_balances_df(self) -> pd.DataFrame:
+        assert self.payments is not None, "`TransactionSim.run()` must be called first."
+        col_names = ["Participant", "Balance"]
+        return pd.DataFrame(self.balances, columns=col_names)
     def simulate_day(self, init_banks: int | None = None):
         """
         Simulates transaction activities for a single day, optionally initializing a specific number of banks.
@@ -120,61 +126,10 @@ class TransactionSim(AbstractTransactionSim):
 
     Methods
     -------
-    run(sim_periods: list[int]) -> None
-        Executes the simulation over specified time periods, generating standard payments.
-    """
 
-    def __init__(self, sim_id: Any, **kwargs) -> None:
-        """
-        Initializes the TransactionSim with a simulation identifier and other parameters.
-        """
-        super().__init__(**kwargs)
-        self.sim_id = sim_id
-
-    def run(self, sim_periods: list[int]) -> None:
-        """
-        Run the simulation for a list of time periods, each representing a discrete simulation interval.
-
-        Parameters
-        ----------
-        sim_periods : list[int]
-            List of periods during which the simulation runs. Each period typically represents a day.
-
-        Notes
-        -----
-        During each period, the simulation:
-        1. Generates a payment network for the day.
-        2. Iterates over all links (i.e., bank pairs) in the network.
-        3. For each link, generates transactions based on the link weight (number of transactions).
-        4. Calculates the timing and value of each transaction without anomalies.
-        5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.
-        """
-        all_payments: list[tuple] = []
-
-        # Process transactions for each simulation period
-        for period in sim_periods:
-            self.simulate_day()  # Simulate network dynamics for the day
-
-            # Process each link in the simulated payment network
-            for (i, j), data in self.network.G.edges.items():
-
-                # Simulate transactions based on the weight of each link
-                for _ in range(data["weight"]):
-                    # Calculate transaction timing
-                    timing = self.timing_fn(self.open_time, self.close_time)
-
-                    # Calculate transaction value
-                    value = self.value_fn()
-                    
-                    # Store transaction details
-                    all_payments.append((period, timing, i, j, 1, value))
-
-        self.payments = all_payments
-
-
-class AnomalyTransactionSim(AbstractTransactionSim):
-    """
-    Simulation class for generating anomalous transaction patterns in a financial network.
+    def __init__(
+        self, sim_id: Any = 0, anomaly_gen: Callable = zero_anomaly_gen, *args, **kwargs
+    ) -> None:
 
     Parameters
     ----------
@@ -206,11 +161,13 @@ class AnomalyTransactionSim(AbstractTransactionSim):
         """
         Initializes the AnomalyTransactionSim with a simulation identifier, an anomaly generator, and other parameters.
         """
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
         self.sim_id = sim_id
-        self.anomaly = anomaly
+        self.anomaly_gen = anomaly_gen
 
-    def run(self, sim_periods: list[int]) -> None:
+    def run(
+        self, sim_periods: Iterable[int], anomalous_bank: Iterable[int] = []
+    ) -> None:
         """
         Run the simulation for a list of time periods, each representing a discrete simulation interval.
 
@@ -229,23 +186,33 @@ class AnomalyTransactionSim(AbstractTransactionSim):
         5. Collects all transactions in a list, storing details including period, timing, sender, receiver, transaction type, and value.
         """
         all_payments: list[tuple] = []
+        balance_now = [0 for _ in range(self.network.total_banks)]
+        balance_min = [0 for _ in range(self.network.total_banks)]
 
         # Process transactions for each simulation period
         for period in sim_periods:
             self.simulate_day()  # Simulate network dynamics for the day
 
             # Process each link in the simulated payment network
-            for (i, j), data in self.network.G.edges.items():
-
+            for (sender, receiver), data in self.network.G.edges.items():
                 # Simulate transactions based on the weight of each link
                 for _ in range(data["weight"]):
                     # Calculate transaction timing
                     timing = self.timing_fn(self.open_time, self.close_time)
 
                     # Calculate transaction value with anomaly
-                    value = self.value_fn() + self.anomaly(period)
+                    value = self.value_fn()
+                    if sender in anomalous_bank:
+                        value += self.anomaly_gen(period)
 
                     # Store transaction details
-                    all_payments.append((period, timing, i, j, 1, value))
+                    all_payments.append((period, timing, sender, receiver, 1, value))
 
+                    # Track balance and min balance
+                    balance_now[sender] -= value
+                    balance_now[receiver] += value
+                    if balance_now[sender] < balance_min[sender]:
+                        balance_min[sender] = balance_now[sender]
+
+        self.balances = [(i, -bal) for i, bal in enumerate(balance_min)]
         self.payments = all_payments
