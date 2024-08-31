@@ -69,3 +69,7 @@ def calculate_network_params(G: nx.DiGraph) -> dict:
         "Max (k-in)": max_k_in,
         "Max (k-out)": max_k_out,
     }
+
+
+def zero_anomaly_gen(period) -> int:
+    return 0
