@@ -45,7 +45,7 @@ class AbstractPaymentNetwork(ABC):
         self.total_banks = total_banks
 
     @abstractmethod
-    def simulate_payments(self, init_banks: int | None):
+    def simulate_payments(self, init_banks: int):
         """
         Abstract method to simulate payments between banks in the network.
         Must be implemented by all subclasses to define specific simulation strategies.
@@ -168,9 +168,7 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
         self.avg_payments = avg_payments
         self.allow_self_loop = allow_self_loop
 
-    def simulate_payments(
-        self, init_banks: int | None = None, increment: int = 2
-    ) -> None:
+    def simulate_payments(self, init_banks: int = 2, increment: int = 1) -> None:
         """
         Simulates the payment processing between banks, gradually increasing the number of participating banks
         according to specified parameters. The simulation starts with an initial set of banks and incrementally adds
@@ -187,6 +185,8 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
         ------
         AssertionError
             If `increment` is not a positive integer.
+        AssertionError
+            If `init_bank` is not a positive integer.
 
         Notes
         -----
@@ -194,10 +194,8 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
         maintaining the average payments per bank. This process continues until all specified banks are included
         in the network or the addition results in no new banks due to constraints.
         """
-        assert increment > 0, "`increment` must be positive integer."
-
-        if init_banks is None or init_banks < 2:
-            init_banks = int(1 + np.ceil(self.total_banks / 2))
+        assert increment > 0, "`increment` must be a positive integer."
+        assert init_banks > 0, "`init_bank` must be a positive integer."
 
         # Initialize the graph with some nodes
         self.G = nx.DiGraph()  # graph network
@@ -217,7 +215,7 @@ class SimplePaymentNetwork(AbstractPaymentNetwork):
 
             # Determine the number of new banks to add in the next iteration
             n_addition = np.minimum(
-                randint(1, increment), self.total_banks - len(self.G.nodes)
+                randint(1, increment + 1), self.total_banks - len(self.G.nodes)
             )
             if n_addition <= 0:
                 break

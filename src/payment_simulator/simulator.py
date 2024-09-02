@@ -125,7 +125,7 @@ class AbstractTransactionSim(ABC):
         col_names = ["Participant", "Balance"]
         return pd.DataFrame(self.balances, columns=col_names)
 
-    def simulate_day(self, init_banks: int | None = None):
+    def simulate_day(self, init_banks: int = 2, **kwargs):
         """
         Simulates transaction activities for a single day, optionally initializing a specific number of banks
         at the start of the simulation. This method utilizes the network's simulate_payments method to process transactions.
@@ -141,7 +141,7 @@ class AbstractTransactionSim(ABC):
         This method is designed to be run multiple times if simulating transactions over multiple days. Each call
         represents a single day of transaction activity, with the state of the network carrying over to the next call.
         """
-        self.network.simulate_payments(init_banks)
+        self.network.simulate_payments(init_banks, **kwargs)
 
 
 class TransactionSim(AbstractTransactionSim):
@@ -195,7 +195,11 @@ class TransactionSim(AbstractTransactionSim):
         self.anomaly_gen = anomaly_gen
 
     def run(
-        self, sim_periods: Iterable[int], anomalous_bank: Iterable[int] = []
+        self,
+        sim_periods: Iterable[int],
+        anomalous_bank: Iterable[int] = [],
+        init_banks: int = 2,
+        increment: int = 1,
     ) -> None:
         """
         Executes the simulation over a series of defined time periods, generating transactions
@@ -231,7 +235,8 @@ class TransactionSim(AbstractTransactionSim):
 
         # Process transactions for each simulation period
         for period in sim_periods:
-            self.simulate_day()  # Simulate network dynamics for the day
+            # Simulate network dynamics for the day
+            self.simulate_day(init_banks, increment = increment)
 
             # Process each link in the simulated payment network
             for (sender, receiver), data in self.network.G.edges.items():
