@@ -7,22 +7,22 @@ import pytest
 
 from src.payment_simulator.anomaly import AnomalyGenerator
 from src.payment_simulator.networks import AbstractPaymentNetwork, SimplePaymentNetwork
-from src.payment_simulator.simulator import TransactionSim
-from src.payment_simulator.utils import random_payment_timing, random_payment_value
+from src.payment_simulator.simulator import RTGSNetworkSim
+from src.payment_simulator.constants import PAYMENTS_COLNAMES
 
 # Constants for tests
+TOTAL_PERIOD = 35
 TOTAL_BANKS = 10
-AVG_PAYMENTS = 15
+TOTAL_PAYMENTS = 100
 ALPHA = 0.01
 ALLOW_SELF_LOOP = False
-SIM_PERIODS = list(range(35))
 OPEN_TIME = "06:30:00"
 CLOSE_TIME = "18:30:00"
 SIM_PARAMS = {
     "open_time": OPEN_TIME,
     "close_time": CLOSE_TIME,
-    "value_fn": random_payment_value,
-    "timing_fn": random_payment_timing,
+    "value_fn": np.random.lognormal,
+    "time_fn": np.random.uniform,
 }
 ANOMALY_PARAMS = {
     "anomaly_start": 15,
@@ -39,7 +39,7 @@ ANOMALY_PARAMS = {
 def payment_network():
     return SimplePaymentNetwork(
         total_banks=TOTAL_BANKS,
-        avg_payments=AVG_PAYMENTS,
+        total_payments=TOTAL_PAYMENTS,
         alpha=ALPHA,
         allow_self_loop=ALLOW_SELF_LOOP,
     )
@@ -47,7 +47,7 @@ def payment_network():
 
 @pytest.fixture
 def normal_transactions(payment_network):
-    return TransactionSim(network=payment_network, **SIM_PARAMS)
+    return RTGSNetworkSim(network=payment_network, **SIM_PARAMS)
 
 
 @pytest.fixture
@@ -56,29 +56,28 @@ def anomaly_gen():
 
 
 def test_initial_conditions(normal_transactions):
-    open_time = datetime.datetime.strptime(OPEN_TIME, "%H:%M:%S").time()
-    close_time = datetime.datetime.strptime(CLOSE_TIME, "%H:%M:%S").time()
+    t_open = datetime.datetime.strptime(OPEN_TIME, "%H:%M:%S").time()
+    t_close = datetime.datetime.strptime(CLOSE_TIME, "%H:%M:%S").time()
 
     # check initialization of normal transaction sim
     assert normal_transactions.sim_id == 0
     assert normal_transactions.network is not None
-    assert normal_transactions.open_time == open_time
-    assert normal_transactions.close_time == close_time
-    assert normal_transactions.value_fn == random_payment_value
-    assert normal_transactions.timing_fn == random_payment_timing
+    assert normal_transactions.t_open == t_open
+    assert normal_transactions.t_close == t_close
+    assert normal_transactions.value_fn == np.random.lognormal
+    assert normal_transactions.time_fn == np.random.uniform
 
     assert isinstance(normal_transactions.network, AbstractPaymentNetwork)
-    assert isinstance(normal_transactions.open_time, datetime.time)
-    assert isinstance(normal_transactions.close_time, datetime.time)
+    assert isinstance(normal_transactions.t_open, datetime.time)
+    assert isinstance(normal_transactions.t_close, datetime.time)
 
 
 def test_transactions_df(normal_transactions):
-    colnames = ["Period", "Time", "Sender", "Receiver", "Count", "Value"]
-    open_time = datetime.datetime.strptime(OPEN_TIME, "%H:%M:%S").time()
-    close_time = datetime.datetime.strptime(CLOSE_TIME, "%H:%M:%S").time()
+    t_open = datetime.datetime.strptime(OPEN_TIME, "%H:%M:%S").time()
+    t_close = datetime.datetime.strptime(CLOSE_TIME, "%H:%M:%S").time()
 
     # Run normal_transactions and get DataFrame
-    normal_transactions.run(SIM_PERIODS)
+    normal_transactions.run(TOTAL_PERIOD, daily_payments=TOTAL_PAYMENTS)
     assert isinstance(normal_transactions.network.G, nx.Graph)
 
     payments_df = normal_transactions.get_payments_df()
@@ -86,22 +85,21 @@ def test_transactions_df(normal_transactions):
     # Validate DataFrame structure
     assert isinstance(payments_df, pd.DataFrame)
     assert not payments_df.empty
-    assert (payments_df.columns.values == colnames).all()
+    assert (payments_df.columns.values == PAYMENTS_COLNAMES).all()
 
     # Validate data types in DataFrame columns
     assert np.issubdtype(payments_df["Time"].dtype, datetime.time)
+    assert payments_df["Period"].dtype == int
     assert payments_df["Sender"].dtype == int
     assert payments_df["Receiver"].dtype == int
-    assert payments_df["Count"].dtype == int
     assert payments_df["Value"].dtype == float
 
     # Check for non-negative payment counts and values
-    assert (payments_df["Count"] > 0).all()
     assert (payments_df["Value"] > 0).all()
 
     # Validate operational hour constraints
-    assert (payments_df["Time"] >= open_time).all()
-    assert (payments_df["Time"] <= close_time).all()
+    assert (payments_df["Time"] >= t_open).all()
+    assert (payments_df["Time"] <= t_close).all()
 
     # Ensure all senders and receivers are valid network nodes
     participants = list(normal_transactions.network.G.nodes())
@@ -109,48 +107,28 @@ def test_transactions_df(normal_transactions):
     assert np.isin(payments_df["Receiver"], participants).all()
 
     # Confirm the expected number of normal_transactions
-    total_normal_transactions = TOTAL_BANKS * AVG_PAYMENTS * len(SIM_PERIODS)
-    assert payments_df.shape[0] == total_normal_transactions
+    assert payments_df.shape[0] == TOTAL_PAYMENTS * TOTAL_PERIOD
 
 
 def test_edge_cases(normal_transactions):
     # Test with zero transactions
-    normal_transactions.network.avg_payments = 0
-    normal_transactions.run(SIM_PERIODS)
+    normal_transactions.run(TOTAL_PERIOD, daily_payments=0)
     payments_df = normal_transactions.get_payments_df()
     assert payments_df.empty
 
-    # Test with the maximum number of banks
-    normal_transactions.network.total_banks = 1000  # Arbitrary large number
-    normal_transactions.network.avg_payments = (
-        1  # Reduce payments to manage performance
-    )
-    normal_transactions.run(SIM_PERIODS)  # Run only one period for performance reasons
+    # Test with a small number of payments
+    normal_transactions.network.total_payments = 1
+    normal_transactions.run(TOTAL_PERIOD)
     payments_df = normal_transactions.get_payments_df()
-    assert len(payments_df) == 1000 * len(SIM_PERIODS)
+    assert len(payments_df) == 1 * TOTAL_PERIOD
 
 
-def test_anomaly_rate(normal_transactions, payment_network, anomaly_gen):
-    correct = 0
-    test_len = 20
-
-    anomaly_transactions = TransactionSim(
-        sim_id=1, anomaly_gen=anomaly_gen, network=payment_network, **SIM_PARAMS
-    )
-
-    for _ in range(5):
-        for _ in range(test_len):
-            normal_transactions.run(SIM_PERIODS)
-            anomaly_transactions.run(SIM_PERIODS, range(3))
-
-            df_normal = normal_transactions.get_payments_df()
-            df_anomaly = anomaly_transactions.get_payments_df()
-
-            if df_normal["Value"].sum() < df_anomaly["Value"].sum():
-                correct += 1
-
-        # Assuming anomalous transactions should generally be higher
-        assert correct / test_len > 0.9
+def test_anomaly_rate(payment_network, anomaly_gen):
+    sim = RTGSNetworkSim(anomaly_v=anomaly_gen, network=payment_network, **SIM_PARAMS)
+    sim.run(TOTAL_PERIOD, anomalous_bank=(1, 2, 3, 4, 5))
+    anomaly_df = sim.get_payments_df()
+    assert anomaly_df["Anomaly Value"].sum() > 0
+    assert (anomaly_df["Anomaly Time"].notna()).sum() > 0
 
 
 def test_error(normal_transactions):

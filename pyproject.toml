@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "payment_simulator"
-version = "0.1.1"
+version = "0.1.0"
 description = "Simulating Large Value Payments"
 authors = ["Hanzholah Shobri", "Farhan M. Sumadiredja"]
 license = "MIT"

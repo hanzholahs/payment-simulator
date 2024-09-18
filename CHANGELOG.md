@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.0 (18/09/2024)
+
+- Revert version as many implementations are modified for simplicity
+- Reimplement payment network 
+- Reimplement simulator 
+
+
 ## v0.1.1 (31/08/2024)
 
 - Remove GroupedPaymentNetwork

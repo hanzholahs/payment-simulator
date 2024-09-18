@@ -10,11 +10,11 @@ from src.payment_simulator.networks import (
 )
 
 # Constants for tests
+TOTAL_BANKS = 35
+TOTAL_PAYMENTS = 1000
 INIT_BANKS = 3
 INCREMENT = 5
-TOTAL_BANKS = 35
 ALPHA = 0.00001
-AVG_PAYMENTS = 100
 ALLOW_SELF_LOOP = False
 
 
@@ -22,7 +22,7 @@ ALLOW_SELF_LOOP = False
 def simple_network():
     return SimplePaymentNetwork(
         total_banks=TOTAL_BANKS,
-        avg_payments=AVG_PAYMENTS,
+        total_payments=TOTAL_PAYMENTS,
         alpha=ALPHA,
         allow_self_loop=ALLOW_SELF_LOOP,
     )
@@ -33,13 +33,13 @@ def test_initial_conditions(simple_network):
     assert isinstance(simple_network, AbstractPaymentNetwork)
     assert isinstance(simple_network, SimplePaymentNetwork)
     assert simple_network.total_banks == TOTAL_BANKS
-    assert simple_network.avg_payments == AVG_PAYMENTS
+    assert simple_network.total_payments ==TOTAL_PAYMENTS
     assert simple_network.alpha == ALPHA
     assert simple_network.allow_self_loop == ALLOW_SELF_LOOP
 
 
 def test_payment_simulation(simple_network):
-    simple_network.simulate_payments(increment=INCREMENT, init_banks=INIT_BANKS)
+    simple_network.simulate_payments(init_banks=INIT_BANKS, increment=INCREMENT)
     assert isinstance(simple_network.G, nx.DiGraph)
     assert isinstance(simple_network.h, np.ndarray)
 
@@ -66,7 +66,7 @@ def test_payment_simulation(simple_network):
 
 def test_self_loop(simple_network):
     simple_network.allow_self_loop = True
-    simple_network.simulate_payments(increment=INCREMENT, init_banks=INIT_BANKS)
+    simple_network.simulate_payments(init_banks=INIT_BANKS, increment=INCREMENT)
 
     # Check self links/transactions
     self_loops = sum(1 for i in range(TOTAL_BANKS) if i in simple_network.G[i])
@@ -79,12 +79,13 @@ def test_self_loop(simple_network):
 
 
 def test_extract_link_matrix(simple_network):
-    simple_network.simulate_payments(increment=INCREMENT, init_banks=INIT_BANKS)
+    simple_network.simulate_payments(init_banks=INIT_BANKS, increment=INCREMENT)
 
     # Ensure link matrix all positive and sums up to the expected total
     matrix = simple_network.extract_link_matrix(False)
+    assert matrix.dtype == int  
     assert np.all(matrix >= 0)
-    assert matrix.sum() == TOTAL_BANKS * AVG_PAYMENTS
+    assert matrix.sum() == TOTAL_PAYMENTS
 
     # Ensure link matrix probabilities all positive and sum to 1
     matrix_prob = simple_network.extract_link_matrix()

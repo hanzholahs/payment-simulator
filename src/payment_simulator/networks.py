@@ -1,11 +1,13 @@
-from abc import ABC, abstractmethod
+import abc
 
 import networkx as nx
 import numpy as np
 from numpy.random import randint
 
+from .utils import is_positive_int
 
-class AbstractPaymentNetwork(ABC):
+
+class AbstractPaymentNetwork(abc.ABC):
     """
     An abstract base class for creating payment networks that simulate transactions
     between banks within a financial system.
@@ -14,14 +16,17 @@ class AbstractPaymentNetwork(ABC):
     ----------
     total_banks : int
         The total number of banks included in the network simulation.
+    total_payments : int
+        The total number of payments to be simulated across the network.
     G : networkx.Graph
         The graph representing the payment network, where nodes represent banks
         and edges represent transactions between them.
-
+    
     Methods
     -------
-    simulate_payments(init_banks: int | None)
-        Simulates transactions across the network. This method must be implemented by subclasses.
+    simulate_payments()
+        Abstract method to simulate payments between banks in the network.
+        Must be implemented by subclasses.
     extract_link_matrix(prop: bool = True) -> np.ndarray
         Returns the adjacency matrix of the network, either as raw counts or as proportions.
     _create_transaction()
@@ -32,34 +37,30 @@ class AbstractPaymentNetwork(ABC):
         Establishes or updates a transaction link between two banks.
     """
 
-    def __init__(self, total_banks: int) -> None:
-        """
-        Initializes the payment network with the specified number of banks.
+    def __init__(self, total_banks: int, total_payments: int) -> None:
+        """Initializes the payment network with the specified number of banks and payments.
 
         Parameters
         ----------
         total_banks : int
-            Specifies the total number of banks to include in the network.
+            The total number of banks included in the network simulation.
+        total_payments : int
+            The total number of payments to be simulated across the network.
         """
         self.G: nx.Graph = None
         self.total_banks = total_banks
+        self.total_payments = total_payments
 
-    @abstractmethod
-    def simulate_payments(self, init_banks: int):
-        """
-        Abstract method to simulate payments between banks in the network.
+    @abc.abstractmethod
+    def simulate_payments(self):
+        """Abstract method to simulate payments between banks in the network.
+
         Must be implemented by all subclasses to define specific simulation strategies.
-
-        Parameters
-        ----------
-        init_banks : int, optional
-            The number of banks that start transacting at the initiation of the simulation.
         """
         pass
 
     def extract_link_matrix(self, prop: bool = True) -> np.ndarray:
-        """
-        Retrieves the adjacency matrix of the network, showing transaction links between banks.
+        """Retrieves the adjacency matrix of the network, showing transaction links between banks.
 
         Parameters
         ----------
@@ -71,16 +72,30 @@ class AbstractPaymentNetwork(ABC):
         -------
         np.ndarray
             The adjacency matrix of the network.
+
+        Notes
+        -----
+        - If `prop` is True, the matrix entries represent the proportion of total transactions.
+        - If `prop` is False, the matrix entries represent raw transaction counts.
         """
-        matrix = nx.to_numpy_array(self.G, weight="weight")
+        matrix = nx.to_numpy_array(self.G, weight="weight", dtype=int)
         if not prop:
             return matrix
         return matrix / matrix.sum()
 
     def _create_transaction(self):
-        """
-        Internally generates a random transaction by selecting a sender and receiver from the network.
-        The selection is influenced by the preferential attachment vector 'h'.
+        """Internally generates a random transaction by selecting a sender and receiver from the network.
+
+        The selection is influenced by the preferential attachment vector `h`. After selecting the banks,
+        it updates the payment link and adjusts the preferential attachment strengths.
+
+        Process
+        -------
+        1. Calculate the probability distribution for selecting banks based on `h`.
+        2. Randomly select a sender and receiver using this probability distribution.
+        3. Ensure that self-loop transactions are only allowed if `allow_self_loop` is True.
+        4. Update the payment link between the sender and receiver.
+        5. Increase the preferential attachment strength for both banks by `alpha`.
         """
         # select sender and receiver
         prob = self.h / self.h.sum()
@@ -99,24 +114,26 @@ class AbstractPaymentNetwork(ABC):
         self.h[receiver] += self.alpha
 
     def _random_bank(self, prob) -> int:
-        """
-        Randomly selects a bank to initiate a transaction, using a weighted probability distribution.
+        """Randomly selects a bank to participate in a transaction, using a weighted probability distribution.
 
         Parameters
         ----------
         prob : np.ndarray
-            An array of probabilities for each bank, indicating the likelihood of each bank initiating a transaction.
+            An array of probabilities for each bank, indicating the likelihood of each bank being selected.
 
         Returns
         -------
         int
-            The identifier of the bank selected to initiate the transaction.
+            The identifier of the bank selected.
+
+        Notes
+        -----
+        - Uses `np.random.choice` to select a bank node based on the provided probability distribution.
         """
         return np.random.choice(self.G.nodes(), p=prob)
 
     def _payment_link(self, sender: int, receiver: int) -> None:
-        """
-        Creates or updates a payment link between two banks.
+        """Creates or updates a payment link between two banks.
 
         Parameters
         ----------
@@ -127,8 +144,8 @@ class AbstractPaymentNetwork(ABC):
 
         Notes
         -----
-        This method increments the weight of the edge between the sender and receiver to reflect
-        the occurrence of a transaction.
+        - If an edge between the sender and receiver already exists, increments its weight by 1.
+        - If no edge exists, creates a new edge with an initial weight of 1.
         """
         if self.G.has_edge(sender, receiver):
             self.G[sender][receiver]["weight"] += 1
@@ -137,95 +154,115 @@ class AbstractPaymentNetwork(ABC):
 
 
 class SimplePaymentNetwork(AbstractPaymentNetwork):
+    """A simple implementation of the `AbstractPaymentNetwork` for simulating payments between banks.
+
+    This class simulates a payment network where banks are added incrementally, and transactions occur based on
+    a preferential attachment mechanism. It allows for the adjustment of parameters such as the number of banks,
+    total payments, preferential attachment strength, and whether self-loops are allowed.
+
+    Attributes
+    ----------
+    alpha : float
+        The preferential attachment strength increment after each transaction.
+    allow_self_loop : bool
+        Determines whether transactions from a bank to itself are permitted.
+    h : np.ndarray
+        An array representing the preferential attachment strength for each bank.
+
+    Methods
+    -------
+    simulate_payments(init_banks=2, increment=1)
+        Simulates the payment processing between banks, gradually increasing the number of participating banks
+        according to specified parameters.
+    """
+
     def __init__(
         self,
         total_banks: int,
-        avg_payments: int,
-        alpha: float = 0,
+        total_payments: int,
+        alpha: float = 1,
         allow_self_loop: bool = False,
     ) -> None:
-        """
-        Initializes a simple payment network simulation, defining parameters such as the number of banks,
-        the average number of transactions per bank, the strength of preferential attachment, and whether
-        self-transactions (self-loops) are permitted.
+        """Initializes a simple payment network simulation with specified parameters.
 
         Parameters
         ----------
         total_banks : int
-            The total number of banks participating in the simulation.
-        avg_payments : int
-            The average number of transactions that each bank is expected to process.
+            The total number of banks included in the network simulation.
+        total_payments : int
+            The total number of payments to be simulated across the network.
         alpha : float, optional
-            The learning rate parameter that influences the strength of preferential attachment in the network,
-            default is 0, which implies no preferential attachment is considered.
+            The preferential attachment strength increment after each transaction, by default 1.0.
         allow_self_loop : bool, optional
-            Indicates whether transactions within the same bank are allowed, default is False.
+            Determines whether transactions from a bank to itself are permitted, by default False.
+
+        Raises
+        ------
+        ValueError
+            If `total_banks` or `total_payments` is not a positive integer.
         """
-        super().__init__(total_banks=total_banks)
+        is_positive_int(total_banks, "total_banks")
+        is_positive_int(total_payments, "total_payments")
+
+        super().__init__(total_banks=total_banks, total_payments=total_payments)
 
         # set simulation parameters
         self.alpha = alpha
-        self.avg_payments = avg_payments
         self.allow_self_loop = allow_self_loop
 
     def simulate_payments(self, init_banks: int = 2, increment: int = 1) -> None:
-        """
-        Simulates the payment processing between banks, gradually increasing the number of participating banks
-        according to specified parameters. The simulation starts with an initial set of banks and incrementally adds
-        more until all banks are active.
+        """Simulates the payment processing between banks.
+
+        The simulation starts with an initial set of banks and incrementally adds
+        more until all banks are active. Transactions are simulated based on a preferential
+        attachment mechanism.
 
         Parameters
         ----------
         init_banks : int, optional
-            The initial number of banks to include in the simulation. If not specified, it defaults to half of the total banks, rounded up.
+            The number of banks to start the simulation with, by default 2.
         increment : int, optional
-            The number of additional banks added in each step of the simulation. Must be a positive integer.
+            The maximum number of new banks to add in each iteration, by default 1.
 
         Raises
         ------
-        AssertionError
-            If `increment` is not a positive integer.
-        AssertionError
-            If `init_bank` is not a positive integer.
+        ValueError
+            If `init_banks` or `increment` is not a positive integer.
 
         Notes
         -----
-        The simulation dynamically adjusts the number of transactions based on the changing number of banks,
-        maintaining the average payments per bank. This process continues until all specified banks are included
-        in the network or the addition results in no new banks due to constraints.
+        - The simulation dynamically adjusts the number of transactions based on the changing number of banks,
+          maintaining the average payments per bank.
+        - This process continues until all specified banks are included in the network.
         """
-        assert increment > 0, "`increment` must be a positive integer."
-        assert init_banks > 0, "`init_bank` must be a positive integer."
+        is_positive_int(init_banks, "init_banks")
+        is_positive_int(increment, "increment")
 
-        # Initialize the graph with some nodes
-        self.G = nx.DiGraph()  # graph network
-        self.G.add_nodes_from(list(range(init_banks)))
+        # Initialize graph and preference vector
+        self.G = nx.DiGraph()
+        self.h = np.array([], dtype=float)
 
-        # Initialize preference vector
-        self.h = np.ones(init_banks, dtype=float)
+        # Set the initial numbers of payments and banks
+        avg_payments = int(np.ceil(self.total_payments / (self.total_banks - init_banks)))
+        add_payments = avg_payments
+        add_banks = init_banks
 
-        # Set number of payments for the iteration
-        n_payments = self.avg_payments * init_banks
+        # Set counter for the number of banks and payments
+        n_payments = 0
+        n_banks = 0
 
-        # Simulate payment network
-        while len(self.G.nodes) <= self.total_banks:
-            # Simulate transactions
-            for _ in range(n_payments):
-                self._create_transaction()
-
-            # Determine the number of new banks to add in the next iteration
-            n_addition = np.minimum(
-                randint(1, increment + 1), self.total_banks - len(self.G.nodes)
-            )
-            if n_addition <= 0:
-                break
-
+        # Simulate transactions
+        while add_banks > 0:
             # Initialize the next bank/node
-            new_nodes = list(range(len(self.G.nodes), len(self.G.nodes) + n_addition))
-            self.G.add_nodes_from(new_nodes)
+            self.h = np.append(self.h, np.ones(add_banks))
+            self.G.add_nodes_from(list(range(n_banks, n_banks + add_banks)))
+            n_banks += add_banks
 
-            # Update the preference vector
-            self.h = np.append(self.h, np.ones(n_addition))
+            # Simulate transactions
+            for _ in range(add_payments):
+                self._create_transaction()
+            n_payments += add_payments
 
-            # Update the number of payments for the next iteration
-            n_payments = self.avg_payments * n_addition
+            # Determine the number of new banks and payments for the next iteration
+            add_banks = min(randint(1, increment + 1), self.total_banks - n_banks)
+            add_payments = min(avg_payments * add_banks, self.total_payments - n_payments)
